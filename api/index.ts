@@ -5,6 +5,7 @@ import auth from "./auth";
 import posts from "./post";
 import projects from "./project";
 import upload from "./upload";
+import notes from "./notes";
 
 const app = new Hono().basePath("/api");
 
@@ -23,6 +24,7 @@ app.route("/auth", auth);
 app.route("/posts", posts);
 app.route("/upload", upload);
 app.route("/projects", projects);
+app.route("/notes", notes);
 
 app.get("/health", (c) =>
   c.json({ success: true, message: "API is running" }, 200)
