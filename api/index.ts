@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import auth from "./auth";
 import posts from "./post";
 import projects from "./project";
+import upload from "./upload";
 
 const app = new Hono().basePath("/api");
 
@@ -20,6 +21,7 @@ app.use(
 // Routes
 app.route("/auth", auth);
 app.route("/posts", posts);
+app.route("/upload", upload);
 app.route("/projects", projects);
 
 app.get("/health", (c) =>
