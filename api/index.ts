@@ -18,4 +18,15 @@ app.use(
 // Routes
 app.route("/auth", auth);
 
+app.get("/health", (c) =>
+  c.json({ success: true, message: "API is running" }, 200)
+);
+
+app.onError((err, c) => {
+  console.error("Error:", err);
+  return c.json({ success: false, message: "Internal server error" }, 500);
+});
+
+app.get("*", (c) => c.json({ success: false, message: "Not Found" }, 404));
+
 export default app;
