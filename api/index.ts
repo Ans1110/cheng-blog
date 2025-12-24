@@ -3,6 +3,7 @@ import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import auth from "./auth";
 import posts from "./post";
+import projects from "./project";
 
 const app = new Hono().basePath("/api");
 
@@ -19,6 +20,7 @@ app.use(
 // Routes
 app.route("/auth", auth);
 app.route("/posts", posts);
+app.route("/projects", projects);
 
 app.get("/health", (c) =>
   c.json({ success: true, message: "API is running" }, 200)
