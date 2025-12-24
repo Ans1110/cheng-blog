@@ -21,7 +21,7 @@ try {
     }
   });
 } catch (error) {
-  // .env might not exist, that's okay
+  // .env might not exist
 }
 
 export default defineConfig({

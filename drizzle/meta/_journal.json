@@ -22,6 +22,13 @@
       "when": 1766568210556,
       "tag": "0002_melted_jimmy_woo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1766571054025,
+      "tag": "0003_talented_avengers",
+      "breakpoints": true
     }
   ]
 }

@@ -46,6 +46,15 @@ export const notes = mysqlTable(
   ]
 );
 
+export const noteCategories = mysqlTable("note_categories", {
+  id: varchar("id", { length: 100 }).primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  icon: varchar("icon", { length: 100 }),
+  createdAt: timestamp("created_at").default(new Date()),
+  updatedAt: timestamp("updated_at").default(new Date()),
+});
+
 export const admin = mysqlTable("admin", {
   id: int("id").primaryKey().autoincrement(),
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
@@ -85,6 +94,9 @@ export type NewPost = typeof posts.$inferInsert;
 
 export type Note = typeof notes.$inferSelect;
 export type NewNote = typeof notes.$inferInsert;
+
+export type NoteCategory = typeof noteCategories.$inferSelect;
+export type NewNoteCategory = typeof noteCategories.$inferInsert;
 
 export type Admin = typeof admin.$inferSelect;
 
