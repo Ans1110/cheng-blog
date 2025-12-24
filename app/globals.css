@@ -1,26 +1,224 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+@plugin "tailwind-scrollbar";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-scrollbar-thumb: var(--scrollbar-thumb);
+  --color-scrollbar-track: var(--scrollbar-track);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.625rem;
+  /* Warm Neutral Palette - Light Mode (Cream/Beige) */
+  /* Low saturation (0.01-0.03), warm hue (60-70), varying lightness */
+  --background: oklch(0.98 0.01 65);
+  --foreground: oklch(0.25 0.02 60);
+  /* Scrollbar colors */
+  --scrollbar-thumb: oklch(0.7 0.02 60);
+  --scrollbar-thumb-hover: oklch(0.6 0.02 60);
+  --scrollbar-track: oklch(0.92 0.01 65);
+  --card: oklch(0.96 0.01 65);
+  --card-foreground: oklch(0.25 0.02 60);
+  --popover: oklch(0.97 0.01 65);
+  --popover-foreground: oklch(0.25 0.02 60);
+  --primary: oklch(0.35 0.03 60);
+  --primary-foreground: oklch(0.95 0.01 65);
+  --secondary: oklch(0.92 0.01 65);
+  --secondary-foreground: oklch(0.3 0.02 60);
+  --muted: oklch(0.9 0.01 65);
+  --muted-foreground: oklch(0.5 0.02 60);
+  --accent: oklch(0.88 0.01 65);
+  --accent-foreground: oklch(0.3 0.02 60);
+  --destructive: oklch(0.55 0.15 25);
+  --border: oklch(0.85 0.01 65);
+  --input: oklch(0.88 0.01 65);
+  --ring: oklch(0.6 0.02 60);
+  --chart-1: oklch(0.55 0.05 60);
+  --chart-2: oklch(0.5 0.05 65);
+  --chart-3: oklch(0.45 0.05 70);
+  --chart-4: oklch(0.6 0.05 55);
+  --chart-5: oklch(0.65 0.05 60);
+  --sidebar: oklch(0.94 0.01 65);
+  --sidebar-foreground: oklch(0.25 0.02 60);
+  --sidebar-primary: oklch(0.35 0.03 60);
+  --sidebar-primary-foreground: oklch(0.95 0.01 65);
+  --sidebar-accent: oklch(0.9 0.01 65);
+  --sidebar-accent-foreground: oklch(0.3 0.02 60);
+  --sidebar-border: oklch(0.85 0.01 65);
+  --sidebar-ring: oklch(0.6 0.02 60);
+}
+
+.dark {
+  /* Warm Neutral Palette - Dark Mode (Dark Taupe/Greige) */
+  /* Low saturation (0.02-0.04), warm hue (55-65), varying lightness for depth */
+  --background: oklch(0.15 0.02 60);
+  --foreground: oklch(0.92 0.01 65);
+  /* Scrollbar colors */
+  --scrollbar-thumb: oklch(0.4 0.02 60);
+  --scrollbar-thumb-hover: oklch(0.5 0.02 60);
+  --scrollbar-track: oklch(0.2 0.02 60);
+  /* Card with glassmorphism - semi-transparent warm taupe */
+  --card: oklch(0.28 0.02 60 / 0.7);
+  --card-foreground: oklch(0.92 0.01 65);
+  --popover: oklch(0.24 0.02 60 / 0.5);
+  --popover-foreground: oklch(0.92 0.01 65);
+  --primary: oklch(0.75 0.03 60);
+  --primary-foreground: oklch(0.2 0.02 60);
+  --secondary: oklch(0.28 0.02 60);
+  --secondary-foreground: oklch(0.9 0.01 65);
+  --muted: oklch(0.26 0.02 60);
+  --muted-foreground: oklch(0.7 0.02 60);
+  --accent: oklch(0.3 0.02 60);
+  --accent-foreground: oklch(0.9 0.01 65);
+  --destructive: oklch(0.65 0.15 25);
+  --border: oklch(0.35 0.02 60 / 0.3);
+  --input: oklch(0.3 0.02 60 / 0.4);
+  --ring: oklch(0.65 0.03 60);
+  --chart-1: oklch(0.55 0.04 60);
+  --chart-2: oklch(0.5 0.04 65);
+  --chart-3: oklch(0.45 0.04 70);
+  --chart-4: oklch(0.6 0.04 55);
+  --chart-5: oklch(0.65 0.04 60);
+  --sidebar: oklch(0.2 0.02 60);
+  --sidebar-foreground: oklch(0.92 0.01 65);
+  --sidebar-primary: oklch(0.75 0.03 60);
+  --sidebar-primary-foreground: oklch(0.2 0.02 60);
+  --sidebar-accent: oklch(0.28 0.02 60);
+  --sidebar-accent-foreground: oklch(0.9 0.01 65);
+  --sidebar-border: oklch(0.35 0.02 60 / 0.3);
+  --sidebar-ring: oklch(0.65 0.03 60);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  @media (min-width: 640px) {
+    .container {
+      max-width: 640px;
+    }
+  }
+  @media (min-width: 768px) {
+    .container {
+      max-width: 768px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 1024px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .container {
+      max-width: 1280px;
+    }
+  }
+
+  /* Glassmorphism effect for cards in dark mode - warm neutral theme */
+  .dark [data-slot="card"] {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: oklch(0.28 0.02 60 / 0.7) !important;
+    border: 1px solid oklch(0.35 0.02 60 / 0.3);
+    box-shadow: 0 8px 32px 0 oklch(0.1 0.02 60 / 0.4);
+  }
+
+  .dark [data-slot="card"]:hover {
+    background: oklch(0.3 0.02 60 / 0.75) !important;
+    border-color: oklch(0.4 0.02 60 / 0.4);
+    box-shadow: 0 12px 40px 0 oklch(0.1 0.02 60 / 0.5);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar - Warm Neutral Theme */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+  border: 2px solid var(--scrollbar-track);
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-track);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
