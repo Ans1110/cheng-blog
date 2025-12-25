@@ -1,3 +1,5 @@
+"use client";
+
 import { ApiResponse } from "@/types/api";
 import { CreateProject, Project, UpdateProject } from "@/types/project";
 import {

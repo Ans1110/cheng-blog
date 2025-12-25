@@ -1,3 +1,5 @@
+"use client";
+
 import { ApiResponse } from "@/types/api";
 import { CreatePost, Post, UpdatePost } from "@/types/post";
 import {
