@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const AUTH_QUERY_KEY = ["auth", "check"];
 
@@ -53,6 +54,9 @@ const useAdminAuth = (redirectOnFail: boolean = true) => {
     onSuccess: () => {
       queryClient.setQueryData(AUTH_QUERY_KEY, true);
     },
+    onError: (error) => {
+      toast.error((error as Error).message || "Login failed");
+    },
   });
 
   const logoutMutation = useMutation({
@@ -60,6 +64,9 @@ const useAdminAuth = (redirectOnFail: boolean = true) => {
     onSuccess: () => {
       queryClient.setQueryData(AUTH_QUERY_KEY, false);
       router.push("/admin/login");
+    },
+    onError: (error) => {
+      toast.error((error as Error).message || "Logout failed");
     },
   });
 
@@ -82,7 +89,7 @@ const useAdminAuth = (redirectOnFail: boolean = true) => {
     try {
       await logoutMutation.mutateAsync();
     } catch (error) {
-      console.error("Error logging out:", error);
+      toast.error((error as Error).message || "Logout failed");
       return false;
     }
   };
