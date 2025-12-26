@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { ExternalLink, FolderGit2 } from "lucide-react";
+import { ExternalLink, Github } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -77,20 +77,22 @@ function ProjectCard({ project, className }: ProjectCardProps) {
         {/* Links */}
         <div className="flex items-center gap-4 pt-2">
           {project.githubUrl && (
-            <Link
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
+            <Button
+              size="sm"
+              className="bg-[#00C9A7] hover:bg-[#00C9A7]/90 text-white flex items-center gap-2"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.open(
+                  project.githubUrl ?? "",
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+              }}
             >
-              <Button
-                size="sm"
-                className="bg-[#00C9A7] hover:bg-[#00C9A7]/90 text-white flex items-center gap-2"
-              >
-                View Code
-                <FolderGit2 className="w-4 h-4" />
-              </Button>
-            </Link>
+              View Project
+              <Github className="size-4" />
+            </Button>
           )}
         </div>
       </div>
