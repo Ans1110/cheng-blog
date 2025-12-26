@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 const auth = new Hono();
 
 const COOKIE_NAME = "admin_session";
-const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
 // POST /auth/login
 auth.post("/login", loginRateLimiter, async (c) => {
