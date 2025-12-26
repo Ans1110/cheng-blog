@@ -13,7 +13,14 @@ import {
 } from "@/components/ui/table";
 import { useDeleteProject, useProjects } from "@/hooks/useProjects";
 import { format } from "date-fns";
-import { ExternalLink, Github, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  ExternalLink,
+  Github,
+  Loader2,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -49,8 +56,8 @@ export default function AdminProjectsPage() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader2 className="size-4 animate-spin" />
           <p className="mt-4 text-muted-foreground">Loading projects...</p>
         </div>
       ) : projects?.length === 0 ? (

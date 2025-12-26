@@ -40,8 +40,9 @@ export default function AdminLayout({
 
   if (isLoading && pathname !== "/admin/login") {
     return (
-      <div className="flex-1 p-8 overflow-auto bg-background">
-        <Loader2 className="size-4 mr-2 animate-spin" />
+      <div className="min-h-screen flex-1 flex items-center justify-center p-8 overflow-auto bg-background">
+        <Loader2 className="size-4 animate-spin" />
+        <p className="ml-2">Loading...</p>
       </div>
     );
   }
