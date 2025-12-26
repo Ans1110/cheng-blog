@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { useDeleteProject, useProjects } from "@/hooks/useProjects";
 import { format } from "date-fns";
-import { ExternalLink, Pencil, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, Github, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -35,14 +35,14 @@ export default function AdminProjectsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Projects
           </h1>
           <p className="text-lg text-muted-foreground">Manage your projects</p>
         </div>
         <Link href="/admin/projects/new">
           <Button size="lg" className="hover:scale-105 transition-transform">
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             New Project
           </Button>
         </Link>
@@ -60,7 +60,7 @@ export default function AdminProjectsPage() {
           </p>
           <Link href="/admin/projects/new">
             <Button>
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 size-4" />
               Create Project
             </Button>
           </Link>
@@ -100,14 +100,14 @@ export default function AdminProjectsPage() {
                       {project.projectUrl && (
                         <Link href={project.projectUrl} target="_blank">
                           <Button variant="ghost" size="icon">
-                            <ExternalLink className="h-4 w-4" />
+                            <ExternalLink className="size-4" />
                           </Button>
                         </Link>
                       )}
                       {project.githubUrl && (
                         <Link href={project.githubUrl} target="_blank">
                           <Button variant="ghost" size="icon">
-                            <ExternalLink className="h-4 w-4" />
+                            <Github className="size-4" />
                           </Button>
                         </Link>
                       )}
@@ -120,7 +120,7 @@ export default function AdminProjectsPage() {
                     <div className="flex justify-end gap-2">
                       <Link href={`/admin/projects/${project.id}`}>
                         <Button variant="ghost" size="icon">
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="size-4" />
                         </Button>
                       </Link>
                       <Button
@@ -129,7 +129,7 @@ export default function AdminProjectsPage() {
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
                         onClick={() => setDeleteId(project.id)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="size-4" />
                       </Button>
                     </div>
                   </TableCell>
