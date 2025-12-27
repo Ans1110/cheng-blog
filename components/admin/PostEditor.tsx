@@ -171,6 +171,11 @@ const PostEditor = ({ post, onSave, isLoading = false }: PostEditorProps) => {
                   placeholder="Write your post content here..."
                   className="h-[500px] font-mono"
                 />
+                {errors.content && (
+                  <p className="text-sm text-destructive">
+                    {errors.content.message}
+                  </p>
+                )}
               </TabsContent>
               <TabsContent value="preview">
                 <Card>
@@ -202,6 +207,11 @@ const PostEditor = ({ post, onSave, isLoading = false }: PostEditorProps) => {
                     label="Slug"
                     placeholder="Enter post slug"
                   />
+                  {errors.slug && (
+                    <p className="text-sm text-destructive">
+                      {errors.slug.message}
+                    </p>
+                  )}
                   <Button
                     type="button"
                     variant="outline"
@@ -215,6 +225,11 @@ const PostEditor = ({ post, onSave, isLoading = false }: PostEditorProps) => {
                 {/* Excerpt */}
                 <div className="space-y-2">
                   <ControlledTextarea name="excerpt" label="Excerpt" />
+                  {errors.excerpt && (
+                    <p className="text-sm text-destructive">
+                      {errors.excerpt.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Tags */}
@@ -238,6 +253,11 @@ const PostEditor = ({ post, onSave, isLoading = false }: PostEditorProps) => {
                       <Plus className="size-4" />
                     </Button>
                   </div>
+                  {errors.tags && (
+                    <p className="text-sm text-destructive">
+                      {errors.tags.message}
+                    </p>
+                  )}
                   {tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {tags.map((tag) => (
