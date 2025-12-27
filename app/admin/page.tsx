@@ -2,20 +2,48 @@
 
 import { usePosts } from "@/hooks/usePosts";
 import { useNotes } from "@/hooks/useNotes";
-import { FileText, BookOpen, Eye, PenSquare } from "lucide-react";
+import { FileText, BookOpen, Eye, PenSquare, Folder } from "lucide-react";
 import { StatsCard } from "@/components/admin/StatsCard";
 import { QuickActions } from "@/components/admin/QuickActions";
-import { RecentPostsList } from "@/components/admin/RecentPostsList";
-import { RecentNotesList } from "@/components/admin/RecentNotesList";
+import {
+  RecentItemsList,
+  RecentItem,
+} from "@/components/admin/RecentItemsList";
+import { useProjects } from "@/hooks/useProjects";
 
 export default function AdminDashboardPage() {
   const { data: posts, isLoading: postsLoading } = usePosts();
   const { data: notes, isLoading: notesLoading } = useNotes();
+  const { data: projects, isLoading: projectsLoading } = useProjects();
 
   const publishedPosts = posts?.filter((p) => p.published) || [];
   const draftPosts = posts?.filter((p) => !p.published) || [];
-  const recentPosts = posts?.slice(0, 5) || [];
-  const recentNotes = notes?.slice(0, 5) || [];
+
+  const recentPostItems: RecentItem[] =
+    posts?.slice(0, 5).map((post) => ({
+      id: post.id.toString(),
+      title: post.title,
+      createdAt: post.createdAt,
+      badge: !post.published
+        ? { text: "(Draft)", className: "ml-2 text-yellow-600" }
+        : undefined,
+    })) || [];
+
+  const recentNoteItems: RecentItem[] =
+    notes?.slice(0, 5).map((note) => ({
+      id: note.id.toString(),
+      title: note.title,
+      createdAt: note.createdAt,
+      subtitle: note.category,
+    })) || [];
+
+  const recentProjectItems: RecentItem[] =
+    projects?.slice(0, 5).map((project) => ({
+      id: project.id.toString(),
+      title: project.title,
+      createdAt: project.createdAt,
+      subtitle: project.tags.join(", "),
+    })) || [];
 
   return (
     <div className="space-y-10">
@@ -56,6 +84,13 @@ export default function AdminDashboardPage() {
           description="Unpublished posts"
           icon={PenSquare}
         />
+        <StatsCard
+          title="Total Projects"
+          value={projects?.length || 0}
+          description="All projects"
+          icon={Folder}
+          isLoading={projectsLoading}
+        />
       </div>
 
       {/* Quick Actions */}
@@ -63,8 +98,30 @@ export default function AdminDashboardPage() {
 
       {/* Recent Activity */}
       <div className="grid gap-6 md:grid-cols-2">
-        <RecentPostsList posts={recentPosts} isLoading={postsLoading} />
-        <RecentNotesList notes={recentNotes} isLoading={notesLoading} />
+        <RecentItemsList
+          title="Recent Posts"
+          description="The latest blog posts"
+          items={recentPostItems}
+          basePath="/admin/posts"
+          isLoading={postsLoading}
+          emptyMessage="No posts yet"
+        />
+        <RecentItemsList
+          title="Recent Notes"
+          description="The latest notes"
+          items={recentNoteItems}
+          basePath="/admin/notes"
+          isLoading={notesLoading}
+          emptyMessage="No notes yet"
+        />
+        <RecentItemsList
+          title="Recent Projects"
+          description="The latest projects"
+          items={recentProjectItems}
+          basePath="/admin/projects"
+          isLoading={projectsLoading}
+          emptyMessage="No projects yet"
+        />
       </div>
     </div>
   );
