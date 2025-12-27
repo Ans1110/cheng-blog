@@ -114,7 +114,7 @@ export default function AdminPostsPage() {
                           </Button>
                         </Link>
                       )}
-                      <Link href={`/admin/posts/${post.id}`}>
+                      <Link href={`/admin/posts/${post.slug}`}>
                         <Button variant="ghost" size="icon">
                           <Pencil className="size-4" />
                         </Button>
