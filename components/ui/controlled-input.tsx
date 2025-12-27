@@ -6,7 +6,7 @@ import { Label } from "./label";
 import { Input } from "./input";
 
 type ControlledInputProps<T extends FieldValues> = {
-  name: Path<T>;
+  name: Path<T> | (string & {});
   label?: React.ReactNode;
   containerClassName?: string;
 } & React.ComponentProps<"input">;
@@ -29,7 +29,7 @@ const ControlledInput = <T extends FieldValues>({
         </Label>
       )}
       <Controller
-        name={name}
+        name={name as Path<T>}
         control={control}
         render={({ field, fieldState: { error } }) => {
           // For file inputs, don't spread the value prop
