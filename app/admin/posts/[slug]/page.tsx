@@ -1,6 +1,6 @@
 "use client";
 
-import PostEditor from "@/components/admin/PostEditor";
+import { PostEditor } from "@/components/admin";
 import { usePostBySlug, useUpdatePost } from "@/hooks/usePosts";
 import { UpdatePost } from "@/types/post";
 import { Loader2 } from "lucide-react";

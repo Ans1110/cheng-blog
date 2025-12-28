@@ -1,6 +1,6 @@
 "use client";
 
-import PostEditor from "@/components/admin/PostEditor";
+import { PostEditor } from "@/components/admin/";
 import { useCreatePost } from "@/hooks/usePosts";
 import { CreatePost } from "@/types/post";
 import { useRouter } from "next/navigation";
