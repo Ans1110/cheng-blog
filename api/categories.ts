@@ -29,7 +29,7 @@ categories.get("/", async (c) => {
     return c.json(
       {
         success: false,
-        message: "Error fetching categories",
+        error: "Error fetching categories",
       },
       500
     );
@@ -50,7 +50,7 @@ categories.get("/:id", async (c) => {
       return c.json(
         {
           success: false,
-          message: "Category not found",
+          error: "Category not found",
         },
         404
       );
@@ -68,7 +68,7 @@ categories.get("/:id", async (c) => {
     return c.json(
       {
         success: false,
-        message: "Error fetching category",
+        error: "Error fetching category",
       },
       500
     );
@@ -86,7 +86,7 @@ categories.post("/", async (c) => {
       return c.json(
         {
           success: false,
-          message: firstIssue?.message || "Invalid category data",
+          error: firstIssue?.message || "Invalid category data",
         },
         400
       );
@@ -104,13 +104,13 @@ categories.post("/", async (c) => {
       return c.json(
         {
           success: false,
-          message: "Category with this ID already exists",
+          error: "Category with this ID already exists",
         },
         400
       );
     }
 
-    const result = await db.insert(schema.noteCategories).values({
+    await db.insert(schema.noteCategories).values({
       id,
       name,
       description,
@@ -120,7 +120,7 @@ categories.post("/", async (c) => {
     return c.json(
       {
         success: true,
-        data: result[0].insertId,
+        data: { id },
       },
       201
     );
@@ -129,7 +129,7 @@ categories.post("/", async (c) => {
     return c.json(
       {
         success: false,
-        message: "Error creating category",
+        error: "Error creating category",
       },
       500
     );
@@ -149,7 +149,7 @@ categories.put("/:id", mutationRateLimiter, async (c) => {
       return c.json(
         {
           success: false,
-          message: firstIssue?.message || "Invalid category data",
+          error: firstIssue?.message || "Invalid category data",
         },
         400
       );
@@ -177,7 +177,7 @@ categories.put("/:id", mutationRateLimiter, async (c) => {
     return c.json(
       {
         success: false,
-        message: "Error updating category",
+        error: "Error updating category",
       },
       500
     );
@@ -199,7 +199,7 @@ categories.delete("/:id", mutationRateLimiter, async (c) => {
       return c.json(
         {
           success: false,
-          message: "Category is still in use by notes",
+          error: "Category is still in use by notes",
         },
         400
       );
@@ -220,7 +220,7 @@ categories.delete("/:id", mutationRateLimiter, async (c) => {
     return c.json(
       {
         success: false,
-        message: "Error deleting category",
+        error: "Error deleting category",
       },
       500
     );
