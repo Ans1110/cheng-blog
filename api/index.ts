@@ -8,6 +8,7 @@ import upload from "./upload";
 import notes from "./notes";
 import search from "./search";
 import learning from "./learning";
+import categories from "./categories";
 
 const app = new Hono().basePath("/api");
 
@@ -29,6 +30,7 @@ app.route("/projects", projects);
 app.route("/notes", notes);
 app.route("/search", search);
 app.route("/learning", learning);
+app.route("/categories", categories);
 
 app.get("/health", (c) =>
   c.json({ success: true, message: "API is running" }, 200)
