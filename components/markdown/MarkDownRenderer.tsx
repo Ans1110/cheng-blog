@@ -98,12 +98,16 @@ export const MarkdownRenderer = ({
             <td className="border border-border px-4 py-2">{children}</td>
           ),
           img: ({ src, alt }) => (
-            <Image
-              src={src as string}
-              alt={alt || ""}
-              className="rounded-lg max-w-full h-auto mx-auto my-4 object-contain"
-              unoptimized
-            />
+            <span className="block relative w-full my-4">
+              <Image
+                src={src as string}
+                alt={alt || ""}
+                width={800}
+                height={600}
+                className="rounded-lg max-w-full h-auto mx-auto object-contain"
+                unoptimized
+              />
+            </span>
           ),
           hr: () => <hr className="my-8 border-border" />,
         }}
