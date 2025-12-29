@@ -2,7 +2,7 @@
 
 import { Post } from "@/types/post";
 import { Variants } from "framer-motion";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
@@ -15,25 +15,6 @@ import {
   CardTitle,
 } from "../ui/card";
 import { format } from "date-fns";
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-};
 
 const headerVariants: Variants = {
   hidden: { opacity: 0, y: -20 },
@@ -52,21 +33,29 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const allTags = Array.from(
-    new Set(posts.flatMap((post) => post.tags || []) || [])
-  ).sort();
+  const allTags = useMemo(() => {
+    if (!posts) return [];
+    const tagSet = new Set<string>();
+    posts.forEach((post) => {
+      post.tags?.forEach((tag) => tagSet.add(tag));
+    });
+    return Array.from(tagSet).sort();
+  }, [posts]);
 
-  const filteredPosts = posts?.filter((post) => {
-    const matchesTag = !selectedTag || post.tags?.includes(selectedTag);
-    const matchesSearch =
-      !searchQuery ||
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTag && matchesSearch;
-  });
+  const filteredPosts = useMemo(() => {
+    if (!posts) return [];
+    return posts.filter((post) => {
+      const matchesTag = !selectedTag || post.tags?.includes(selectedTag);
+      const matchesSearch =
+        !searchQuery ||
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesTag && matchesSearch;
+    });
+  }, [posts, selectedTag, searchQuery]);
 
   return (
-    <div className="container py-12 space-y-10">
+    <div className="container py-12 space-y-10 h-screen">
       {/* Header */}
       <motion.div
         className="space-y-3"
@@ -143,14 +132,14 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
           <p className="text-muted-foreground text-lg">No posts found.</p>
         </motion.div>
       ) : (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-          className="gird gap-6 md:grid-cols-2 lg:grid-cols-3"
-        >
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredPosts?.map((post, index) => (
-            <motion.div key={post.id} variants={itemVariants} custom={index}>
+            <motion.div
+              key={post.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1, ease: "easeOut" }}
+            >
               <Link href={`/posts/${post.slug}`}>
                 <Card className="h-full hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 border-border/50 group">
                   <CardHeader className="space-y-3">
@@ -190,7 +179,7 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
               </Link>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       )}
     </div>
   );
