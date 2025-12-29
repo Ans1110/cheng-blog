@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { toast, Toaster } from "sonner";
+import { ScrollToTop } from "./ScrollToTop";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -31,6 +32,7 @@ const Providers = ({ children }: ProvidersProps) => {
         enableSystem
         disableTransitionOnChange
       >
+        <ScrollToTop />
         <Toaster />
         {children}
       </ThemeProvider>
