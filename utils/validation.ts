@@ -132,6 +132,21 @@ export const updateProjectSchema = z.object({
     .nullable(),
 });
 
+export const createLearningSchema = z.object({
+  year: z.number().min(1900, "Year must be greater than 1900"),
+  title: z.string().min(1, "Title is required"),
+  skills: z.array(z.string()).min(1, "At least one skill is required"),
+});
+
+export const updateLearningSchema = z.object({
+  year: z.number().min(1900, "Year must be greater than 1900").optional(),
+  title: z.string().min(1, "Title is required").optional(),
+  skills: z
+    .array(z.string())
+    .min(1, "At least one skill is required")
+    .optional(),
+});
+
 export type CreatePostInput = z.infer<typeof createPostSchema>;
 export type UpdatePostInput = z.infer<typeof updatePostSchema>;
 export type CreateNoteInput = z.infer<typeof createNoteSchema>;
@@ -142,3 +157,5 @@ export type CreateProjectInput = z.infer<typeof createProjectSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 export type CreateNoteCategoryInput = z.infer<typeof createNoteCategorySchema>;
 export type UpdateNoteCategoryInput = z.infer<typeof updateNoteCategorySchema>;
+export type CreateLearningInput = z.infer<typeof createLearningSchema>;
+export type UpdateLearningInput = z.infer<typeof updateLearningSchema>;
