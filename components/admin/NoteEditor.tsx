@@ -25,7 +25,14 @@ type NoteFormData = z.input<typeof createNoteSchema>;
 
 const getIconComponent = (iconName: string | null | undefined) => {
   if (!iconName) return LucideIcons.FileText;
-  const IconComponent = LucideIcons[iconName as keyof typeof LucideIcons];
+
+  // Convert to PascalCase (e.g., "file-text" -> "FileText", "block" -> "Block")
+  const pascalCase = iconName
+    .split(/[-_\s]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join("");
+
+  const IconComponent = LucideIcons[pascalCase as keyof typeof LucideIcons];
   if (typeof IconComponent === "function") {
     return IconComponent as LucideIcons.LucideIcon;
   }
@@ -70,6 +77,7 @@ export const NoteEditor = ({
 
   const title = watch("title");
   const contenet = watch("content");
+  const selectedCategory = watch("category");
 
   const generateSlug = () => {
     const slug = title
@@ -250,7 +258,7 @@ export const NoteEditor = ({
                             onClick={() => setValue("category", category.id)}
                             className={cn(
                               "flex items-start gap-3 p-3 rounded-lg border text-left transition-all cursor-pointer",
-                              form.getValues("category") === category.id
+                              selectedCategory === category.id
                                 ? "border-primary bg-primary/5 ring-1 ring-primary"
                                 : "border-border hover:border-primary/50 hover:bg-muted/50"
                             )}
@@ -258,7 +266,7 @@ export const NoteEditor = ({
                             <div
                               className={cn(
                                 "mt-0.5 p-1.5 rounded-md",
-                                form.getValues("category") === category.id
+                                selectedCategory === category.id
                                   ? "bg-primary text-primary-foreground"
                                   : "bg-muted text-muted-foreground"
                               )}
@@ -269,7 +277,7 @@ export const NoteEditor = ({
                               <p
                                 className={cn(
                                   "font-medium text-sm",
-                                  form.getValues("category") === category.id
+                                  selectedCategory === category.id
                                     ? "text-primary"
                                     : "text-foreground"
                                 )}
