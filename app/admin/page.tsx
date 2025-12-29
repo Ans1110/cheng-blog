@@ -21,7 +21,7 @@ export default function AdminDashboardPage() {
 
   const recentPostItems: RecentItem[] =
     posts?.slice(0, 5).map((post) => ({
-      id: post.id.toString(),
+      id: post.slug,
       title: post.title,
       createdAt: post.createdAt,
       badge: !post.published
@@ -31,7 +31,7 @@ export default function AdminDashboardPage() {
 
   const recentNoteItems: RecentItem[] =
     notes?.slice(0, 5).map((note) => ({
-      id: note.id.toString(),
+      id: note.slug,
       title: note.title,
       createdAt: note.createdAt,
       subtitle: note.category,
