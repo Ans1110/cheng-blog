@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -46,24 +47,40 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <h1
-            className={`text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 ${
-              isDark ? "text-white" : ""
-            }`}
-            style={
-              isDark
-                ? {
-                    textShadow: `
-                0 0 10px rgba(255, 255, 255, 0.3),
-                0 0 20px rgba(255, 255, 255, 0.2),
-                0 0 40px rgba(255, 255, 255, 0.1)
-              `,
-                  }
-                : undefined
-            }
-          >
-            Explore. Focus. Improve.
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <Image
+              src="/left_wing.svg"
+              alt="Left wing"
+              width={80}
+              height={80}
+              className="w-16 h-25 md:w-20 md:h-20 lg:w-24 lg:h-24"
+            />
+            <h1
+              className={`text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight ${
+                isDark ? "text-white" : ""
+              }`}
+              style={
+                isDark
+                  ? {
+                      textShadow: `
+                  0 0 10px rgba(255, 255, 255, 0.3),
+                  0 0 20px rgba(255, 255, 255, 0.2),
+                  0 0 40px rgba(255, 255, 255, 0.1)
+                `,
+                    }
+                  : undefined
+              }
+            >
+              Explore. Focus. Improve.
+            </h1>
+            <Image
+              src="/right_wing.svg"
+              alt="Right wing"
+              width={80}
+              height={80}
+              className="w-16 h-25 md:w-20 md:h-20 lg:w-24 lg:h-24"
+            />
+          </div>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Some days waiting for light, some days learning to land.
           </p>
