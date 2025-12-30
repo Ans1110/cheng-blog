@@ -3,6 +3,7 @@
 import { Github, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const quickLinks = [
   { href: "/", label: "Home" },
@@ -17,6 +18,15 @@ const socialLinks = [
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (isHomePage) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <footer className="border-t bg-muted/30">
@@ -25,8 +35,8 @@ export const Footer = () => {
         {/* Desktop: 3 columns */}
         <div className="flex flex-col md:grid md:grid-cols-3 gap-8">
           {/* Logo/Brand - First on mobile, center on desktop */}
-          <div className="flex flex-col items-center order-first md:order-none md:col-start-2">
-            <Link href="/" className="inline-block">
+          <div className="flex flex-col items-center order-first md:order-0 md:col-start-2">
+            <Link href="/" className="inline-block" onClick={handleLogoClick}>
               <Image
                 src="/logo_gold.svg"
                 alt="Logo"

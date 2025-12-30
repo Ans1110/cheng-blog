@@ -73,12 +73,20 @@ const itemVariants = {
 export const Header = () => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isHomePage = pathname === "/";
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (isHomePage) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center">
-          <Link href="/" className="mr-8 flex items-center space-x-2">
+          <Link href="/" className="mr-8 flex items-center space-x-2" onClick={handleLogoClick}>
             <Image
               src="/logo_gold.svg"
               alt="Logo"
