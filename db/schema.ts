@@ -60,6 +60,20 @@ export const admin = mysqlTable("admin", {
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
 });
 
+export const sessions = mysqlTable(
+  "sessions",
+  {
+    id: int("id").primaryKey().autoincrement(),
+    token: varchar("token", { length: 255 }).notNull().unique(),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [index("sessions_token_idx").on(table.token)]
+);
+
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
+
 export const projects = mysqlTable(
   "projects",
   {
