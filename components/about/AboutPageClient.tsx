@@ -72,7 +72,12 @@ export const AboutPageClient = ({ data }: AboutPageClientProps) => {
               <CardTitle className="text-xl">Introduction</CardTitle>
             </CardHeader>
             <CardContent className="prose prose-zinc dark:prose-invert max-w-none">
-              <p className="text-muted-foreground leading-relaxed"></p>
+              <p className="text-muted-foreground leading-relaxed">
+                Hi! I&apos;m Cheng, enjoy exploring new technologies, solving
+                everyday problems with code, and building things I genuinely
+                enjoy. This blog is a place for me to share what I learn during
+                development and some of my thoughts along the way.
+              </p>
               <p className="text-muted-foreground leading-relaxed mt-4"></p>
             </CardContent>
           </Card>
@@ -98,7 +103,20 @@ export const AboutPageClient = ({ data }: AboutPageClientProps) => {
                   },
                 }}
               >
-                {}
+                <ul className="space-y-1.5">
+                  <li className="flex items-center gap-2 text-base text-muted-foreground cursor-default">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    <span>A second-year computer science student</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-base text-muted-foreground cursor-default">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    <span>Learning Web3 technologies</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-base text-muted-foreground cursor-default">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    <span>Hooked on Golang</span>
+                  </li>
+                </ul>
               </motion.div>
             </CardContent>
           </Card>
@@ -110,7 +128,13 @@ export const AboutPageClient = ({ data }: AboutPageClientProps) => {
               <CardTitle className="text-xl">Get in Touch</CardTitle>
             </CardHeader>
             <CardContent className="prose prose-zinc dark:prose-invert max-w-none">
-              <p className="text-muted-foreground leading-relaxed"></p>
+              <p className="text-muted-foreground leading-relaxed">
+                If you&apos;d like to connect, discuss ideas, collaborate on a
+                project, or simply talk about software development, feel free to
+                reach out. You can find me on GitHub or send me an email.
+                I&apos;m always open to meaningful conversations and knowledge
+                sharing.
+              </p>
             </CardContent>
           </Card>
         </motion.div>
