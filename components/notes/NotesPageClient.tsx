@@ -3,7 +3,6 @@
 import { NoteCategory } from "@/types/category";
 import { Note } from "@/types/note";
 import { Variants } from "framer-motion";
-import * as LucideIcons from "lucide-react";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "../ui/input";
@@ -49,22 +48,6 @@ const folderVariants: Variants = {
     scale: 1,
     transition: { duration: 0.4, ease: "easeOut" },
   },
-};
-
-const getIconComponent = (iconName: string | null | undefined) => {
-  if (!iconName) return LucideIcons.FileText;
-
-  // Convert to PascalCase (e.g., "file-text" -> "FileText", "block" -> "Block")
-  const pascalCase = iconName
-    .split(/[-_\s]/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join("");
-
-  const IconComponent = LucideIcons[pascalCase as keyof typeof LucideIcons];
-  if (typeof IconComponent === "function") {
-    return IconComponent as LucideIcons.LucideIcon;
-  }
-  return LucideIcons.FileText;
 };
 
 interface NotesPageClientProps {
@@ -238,32 +221,30 @@ export const NotesPageClient = ({
           >
             {categories.map((category) => {
               const count = categoryCounts[category.id] || 0;
-              const IconComponent = getIconComponent(category.icon);
               return (
                 <motion.div key={category.id} variants={folderVariants}>
                   <Card
                     className={cn(
-                      "cursor-pointer transition-all duration-300 hover:shadow-lg group h-full",
-                      count === 0 && "opacity-60"
+                      "cursor-pointer transition-all duration-300 hover:shadow-md group h-full border-border/50 hover:border-primary/30 min-h-[160px]",
+                      count === 0 && "opacity-50 pointer-events-none"
                     )}
                     onClick={() =>
                       count > 0 && setSelectedCategory(category.id)
                     }
                   >
-                    <CardHeader>
+                    <CardHeader className="space-y-4 p-6">
                       <div className="flex items-start justify-between">
-                        <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                          <IconComponent className="size-4" />
-                        </div>
-                        <div className="flex items-center gap-1 text-muted-foreground group-hover:text-foreground transition-colors">
-                          <span className="text-sm font-medium">{count}</span>
-                          <ChevronRight className="size-4" />
-                        </div>
+                        <CardTitle className="text-2xl font-semibold group-hover:text-primary transition-colors">
+                          {category.name}
+                        </CardTitle>
+                        <Badge
+                          variant="secondary"
+                          className="text-sm px-3 py-1"
+                        >
+                          {count}
+                        </Badge>
                       </div>
-                      <CardTitle className="text-xl mt-4">
-                        {category.name}
-                      </CardTitle>
-                      <CardDescription className="text-sm">
+                      <CardDescription className="text-base line-clamp-2">
                         {category.description}
                       </CardDescription>
                     </CardHeader>
@@ -297,26 +278,7 @@ export const NotesPageClient = ({
           Back to folders
         </button>
 
-        <div className="flex items-center gap-4">
-          {selectedCategory &&
-            (() => {
-              const categoryItem = categories.find(
-                (c) => c.id === selectedCategory
-              );
-              if (!categoryItem) return null;
-              const IconComponent = getIconComponent(categoryItem.icon);
-              return (
-                <motion.div
-                  key={categoryItem.id}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.3, type: "spring" }}
-                  className="p-3 rounded-lg bg-primary/10 text-primary"
-                >
-                  <IconComponent className="size-4" />
-                </motion.div>
-              );
-            })()}
+        <div className="space-y-1">
           <h1 className="text-3xl font-bold">
             {selectedCategory
               ? categories.find((c) => c.id === selectedCategory)?.name ||
