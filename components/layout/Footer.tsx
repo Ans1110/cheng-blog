@@ -1,6 +1,7 @@
 "use client";
 
 import { Github, Mail } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const quickLinks = [
@@ -38,9 +39,15 @@ export const Footer = () => {
           </div>
 
           {/* Logo/Brand */}
-          <div className="text-center">
-            <Link href="/" className="text-2xl font-bold">
-              Cheng
+          <div className="flex flex-col items-center">
+            <Link href="/" className="inline-block">
+              <Image
+                src="/logo_gold.svg"
+                alt="Logo"
+                width={60}
+                height={60}
+                className="w-25 h-16"
+              />
             </Link>
             <p className="text-sm text-muted-foreground mt-2">
               Building things, one line at a time
