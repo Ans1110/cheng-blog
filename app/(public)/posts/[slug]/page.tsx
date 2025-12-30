@@ -1,27 +1,12 @@
-"use client";
+import PostClient from "./client";
 
-import { PostContent } from "@/components/posts";
-import { usePostBySlug } from "@/hooks/usePosts";
-import { Loader2 } from "lucide-react";
-import { notFound, useParams } from "next/navigation";
+export const dynamic = "force-static";
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return [];
+}
 
 export default function PostPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const { data: post, isLoading, error } = usePostBySlug(slug);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="size-4 animate-spin" />
-        <p className="ml-2">Loading...</p>
-      </div>
-    );
-  }
-
-  if (error || !post || !post.published) {
-    notFound();
-  }
-
-  return <PostContent post={post} />;
+  return <PostClient />;
 }
