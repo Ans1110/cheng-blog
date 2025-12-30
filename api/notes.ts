@@ -12,15 +12,11 @@ notes.get("/", async (c) => {
   const { category } = c.req.query();
 
   try {
-    const query = db
+    const result = await db
       .select()
       .from(schema.notes)
+      .where(category ? eq(schema.notes.category, category) : undefined)
       .orderBy(desc(schema.notes.createdAt));
-
-    let result = await query;
-    if (category) {
-      result = result.filter((note) => note.category === category);
-    }
 
     return c.json(
       {

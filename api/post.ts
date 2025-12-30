@@ -1,6 +1,6 @@
 import { db, schema } from "@/db";
 import { createPostSchema, updatePostSchema } from "@/utils/validation";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { mutationRateLimiter } from "./middleware/rateLimiter";
 import { authMiddleware } from "./middleware/auth";
@@ -12,19 +12,22 @@ posts.get("/", async (c) => {
   const { tag, published } = c.req.query();
 
   try {
-    let result = await db
-      .select()
-      .from(schema.posts)
-      .orderBy(desc(schema.posts.createdAt));
+    const conditions = [];
 
     if (published !== undefined) {
       const isPublished = published === "true";
-      result = result.filter((post) => post.published === isPublished);
+      conditions.push(eq(schema.posts.published, isPublished));
     }
 
     if (tag) {
-      result = result.filter((post) => post.tags?.includes(tag));
+      conditions.push(sql`JSON_CONTAINS(${schema.posts.tags}, ${JSON.stringify(tag)})`);
     }
+
+    const result = await db
+      .select()
+      .from(schema.posts)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(schema.posts.createdAt));
 
     return c.json(
       {
