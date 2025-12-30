@@ -37,8 +37,8 @@ export const notes = mysqlTable(
     content: text("content").notNull(),
     category: varchar("category", { length: 100 }).notNull(),
     tags: json("tags").$type<string[]>().default([]),
-    createdAt: timestamp("created_at").default(new Date()),
-    updatedAt: timestamp("updated_at").default(new Date()),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [
     index("notes_created_at_idx").on(table.createdAt),
@@ -51,8 +51,8 @@ export const noteCategories = mysqlTable("note_categories", {
   name: varchar("name", { length: 100 }).notNull(),
   description: text("description"),
   icon: varchar("icon", { length: 100 }),
-  createdAt: timestamp("created_at").default(new Date()),
-  updatedAt: timestamp("updated_at").default(new Date()),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const admin = mysqlTable("admin", {
@@ -84,8 +84,8 @@ export const projects = mysqlTable(
     imageUrl: varchar("image_url", { length: 255 }),
     projectUrl: varchar("project_url", { length: 255 }),
     githubUrl: varchar("github_url", { length: 255 }),
-    createdAt: timestamp("created_at").default(new Date()),
-    updatedAt: timestamp("updated_at").default(new Date()),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [index("projects_created_at_idx").on(table.createdAt)]
 );
@@ -97,8 +97,8 @@ export const learningExperiences = mysqlTable(
     year: int("year").notNull(),
     title: varchar("title", { length: 255 }).notNull(),
     skills: json("skills").$type<string[]>().default([]),
-    createdAt: timestamp("created_at").default(new Date()),
-    updatedAt: timestamp("updated_at").default(new Date()),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => [index("learning_experiences_year_idx").on(table.year)]
 );
