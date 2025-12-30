@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
         </CardHeader>
         <CardContent>
           <FormProvider {...form}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <ControlledInput
                 name="password"
                 label="Password"
