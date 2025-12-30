@@ -56,6 +56,10 @@ const ControlledInput = <T extends FieldValues>({
                       };
                       reader.readAsDataURL(file);
                     }
+                  } else if (type === "number") {
+                    // For number inputs, convert to number
+                    const numValue = e.target.valueAsNumber;
+                    fieldOnChange(isNaN(numValue) ? "" : numValue);
                   } else {
                     fieldOnChange(e);
                   }

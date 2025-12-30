@@ -77,7 +77,7 @@ learning.post("/", mutationRateLimiter, async (c) => {
       updatedAt: new Date(),
     });
 
-    return c.json({ success: true, data: result[0].insertId }, 201);
+    return c.json({ success: true, data: { id: result[0].insertId } }, 201);
   } catch (error) {
     console.error("Error creating learning experience:", error);
     return c.json(

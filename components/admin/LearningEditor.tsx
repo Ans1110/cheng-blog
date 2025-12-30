@@ -10,6 +10,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ControlledInput } from "../ui/controlled-input";
+import { Input } from "../ui/input";
 
 interface LearningEditorProps {
   experience?: Learning;
@@ -31,17 +32,6 @@ export const LearningEditor = ({
   const [skills, setSkills] = useState<string[]>(experience?.skills || []);
   const [skillInput, setSkillInput] = useState<string>("");
 
-  const handleAddSkill = () => {
-    if (skillInput.trim() && !skills.includes(skillInput.trim())) {
-      setSkills([...skills, skillInput.trim()]);
-      setSkillInput("");
-    }
-  };
-
-  const handleRemoveSkill = (skill: string) => {
-    setSkills(skills.filter((s) => s !== skill));
-  };
-
   const form = useForm<CreateLearning>({
     resolver: zodResolver(createLearningSchema),
     defaultValues: {
@@ -51,12 +41,27 @@ export const LearningEditor = ({
     },
   });
 
-  const { handleSubmit } = form;
+  const { handleSubmit, setValue } = form;
+
+  const handleAddSkill = () => {
+    if (skillInput.trim() && !skills.includes(skillInput.trim())) {
+      const newSkills = [...skills, skillInput.trim()];
+      setSkills(newSkills);
+      setValue("skills", newSkills);
+      setSkillInput("");
+    }
+  };
+
+  const handleRemoveSkill = (skill: string) => {
+    const newSkills = skills.filter((s) => s !== skill);
+    setSkills(newSkills);
+    setValue("skills", newSkills);
+  };
 
   const onSubmit = async (data: CreateLearning) => {
     setIsSaving(true);
     try {
-      await onSave(data);
+      await onSave({ ...data, skills });
     } finally {
       setIsSaving(false);
     }
@@ -105,6 +110,7 @@ export const LearningEditor = ({
                   <div className="space-y-2">
                     <ControlledInput
                       name="year"
+                      type="number"
                       label="Year *"
                       placeholder="Enter year"
                       className="w-full"
@@ -132,10 +138,10 @@ export const LearningEditor = ({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-2">
-                  <ControlledInput
-                    name="skillInput"
+                  <Input
                     placeholder="Add skill"
                     className="w-full"
+                    value={skillInput}
                     onChange={(e) => setSkillInput(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && skillInput.trim()) {
