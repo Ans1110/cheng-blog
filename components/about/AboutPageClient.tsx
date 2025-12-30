@@ -6,16 +6,6 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { LearningTimeLine } from "./LearningTimeLine";
 
-const aboutVariants: Variants = {
-  hidden: { opacity: 0, y: 20, scale: 0.8 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-};
-
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
