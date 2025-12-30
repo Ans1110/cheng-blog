@@ -1,7 +1,7 @@
 import { Context, Next } from "hono";
 import { getCookie } from "hono/cookie";
 import { db, schema } from "@/db";
-import { eq, gt } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 
 const COOKIE_NAME = "admin_session";
 
@@ -37,5 +37,5 @@ export const authMiddleware = async (c: Context, next: Next) => {
 export const cleanupExpiredSessions = async () => {
   await db
     .delete(schema.sessions)
-    .where(gt(new Date(), schema.sessions.expiresAt));
+    .where(lt(schema.sessions.expiresAt, new Date()));
 };
