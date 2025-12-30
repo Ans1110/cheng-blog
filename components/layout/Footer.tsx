@@ -21,25 +21,11 @@ export const Footer = () => {
   return (
     <footer className="border-t bg-muted/30">
       <div className="container px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
-            <nav className="flex flex-col space-y-2">
-              {quickLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          {/* Logo/Brand */}
-          <div className="flex flex-col items-center">
+        {/* Mobile: Logo first, then links in row */}
+        {/* Desktop: 3 columns */}
+        <div className="flex flex-col md:grid md:grid-cols-3 gap-8">
+          {/* Logo/Brand - First on mobile, center on desktop */}
+          <div className="flex flex-col items-center order-first md:order-none md:col-start-2">
             <Link href="/" className="inline-block">
               <Image
                 src="/logo_gold.svg"
@@ -49,35 +35,54 @@ export const Footer = () => {
                 className="w-25 h-16"
               />
             </Link>
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="text-sm text-muted-foreground mt-2 text-center">
               Building things, one line at a time
             </p>
             <p className="text-sm mt-2">Web Developer</p>
           </div>
 
-          {/* Social & Contact */}
-          <div className="md:text-right">
-            <h3 className="font-semibold mb-4">Connect</h3>
-            <div className="flex md:justify-end space-x-4">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={social.label}
-                >
-                  <social.icon className="h-5 w-5" />
-                </a>
-              ))}
+          {/* Quick Links & Connect - Side by side on mobile */}
+          <div className="flex flex-row justify-between md:contents">
+            {/* Quick Links */}
+            <div className="md:order-first md:col-start-1 md:row-start-1">
+              <h3 className="font-semibold mb-4">Quick Links</h3>
+              <nav className="flex flex-col space-y-2">
+                {quickLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
             </div>
-            <Link
-              href="/about"
-              className="text-muted-foreground hover:text-foreground transition-colors text-sm mt-4 inline-block"
-            >
-              Contact Me
-            </Link>
+
+            {/* Social & Contact */}
+            <div className="text-right md:col-start-3 md:row-start-1">
+              <h3 className="font-semibold mb-4">Connect</h3>
+              <div className="flex justify-end space-x-4">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={social.label}
+                  >
+                    <social.icon className="h-5 w-5" />
+                  </a>
+                ))}
+              </div>
+              <Link
+                href="/about"
+                className="text-muted-foreground hover:text-foreground transition-colors text-sm mt-4 inline-block"
+              >
+                Contact Me
+              </Link>
+            </div>
           </div>
         </div>
 
