@@ -45,6 +45,7 @@ export const Footer = () => {
             <p className="text-sm text-muted-foreground mt-2">
               Building things, one line at a time
             </p>
+            <p className="text-sm mt-2">Web Developer</p>
           </div>
 
           {/* Social & Contact */}
