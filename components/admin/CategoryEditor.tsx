@@ -35,7 +35,6 @@ export const CategoryEditor = ({
       id: category?.id || "",
       name: category?.name || "",
       description: category?.description || "",
-      icon: category?.icon || "",
     },
   });
 
@@ -114,26 +113,6 @@ export const CategoryEditor = ({
               />
             </div>
 
-            <div className="space-y-2">
-              <ControlledInput
-                name="icon"
-                label="Icon"
-                placeholder="Enter category icon"
-                className="w-full"
-              />
-              <p className="text-sm text-muted-foreground">
-                Use Lucide icon names. See{" "}
-                <a
-                  href="https://lucide.dev/icons"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  lucide.dev/icons
-                </a>{" "}
-                for available icons.
-              </p>
-            </div>
           </CardContent>
         </Card>
       </form>
