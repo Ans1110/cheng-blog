@@ -1,16 +1,12 @@
 import { Hono } from "hono";
-import { getCookie } from "hono/cookie";
 import { uploadRateLimiter } from "./middleware/rateLimiter";
+import { authMiddleware } from "./middleware/auth";
 import cloudinary from "@/lib/cloudinary";
 
 const upload = new Hono();
 
-// Auth middleware
-upload.use("*", async (c, next) => {
-  const session = getCookie(c, "admin_session");
-  if (!session) return c.json({ success: false, message: "Unauthorized" }, 401);
-  await next();
-});
+// Auth middleware for all upload routes
+upload.use("*", authMiddleware);
 
 // POST /upload - upload image to Cloudinary
 upload.post("/", uploadRateLimiter, async (c) => {

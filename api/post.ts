@@ -3,6 +3,7 @@ import { createPostSchema, updatePostSchema } from "@/utils/validation";
 import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { mutationRateLimiter } from "./middleware/rateLimiter";
+import { authMiddleware } from "./middleware/auth";
 
 const posts = new Hono();
 
@@ -85,7 +86,7 @@ posts.get("/:slug", async (c) => {
 });
 
 // POST /posts - create post
-posts.post("/", async (c) => {
+posts.post("/", authMiddleware, mutationRateLimiter, async (c) => {
   try {
     const body = await c.req.json();
     const parsed = createPostSchema.safeParse(body);
@@ -150,7 +151,7 @@ posts.post("/", async (c) => {
 });
 
 // PUT /posts/:id - update post
-posts.put("/:id", mutationRateLimiter, async (c) => {
+posts.put("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = Number(c.req.param("id"));
 
   if (isNaN(id))
@@ -225,7 +226,7 @@ posts.put("/:id", mutationRateLimiter, async (c) => {
 });
 
 // DELETE /posts/:id - delete post
-posts.delete("/:id", mutationRateLimiter, async (c) => {
+posts.delete("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = Number(c.req.param("id"));
 
   if (isNaN(id))

@@ -6,6 +6,7 @@ import {
 import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { mutationRateLimiter } from "./middleware/rateLimiter";
+import { authMiddleware } from "./middleware/auth";
 
 const categories = new Hono();
 
@@ -76,7 +77,7 @@ categories.get("/:id", async (c) => {
 });
 
 // POST /categories - create category
-categories.post("/", async (c) => {
+categories.post("/", authMiddleware, mutationRateLimiter, async (c) => {
   try {
     const body = await c.req.json();
     const parsed = createNoteCategorySchema.safeParse(body);
@@ -137,7 +138,7 @@ categories.post("/", async (c) => {
 });
 
 // PUT /categories/:id - update category
-categories.put("/:id", mutationRateLimiter, async (c) => {
+categories.put("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = c.req.param("id");
 
   try {
@@ -185,7 +186,7 @@ categories.put("/:id", mutationRateLimiter, async (c) => {
 });
 
 // DELETE /categories/:id - delete category
-categories.delete("/:id", mutationRateLimiter, async (c) => {
+categories.delete("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = c.req.param("id");
   try {
     // check if any notes are using this category

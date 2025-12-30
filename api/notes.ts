@@ -1,8 +1,8 @@
 import { db, schema } from "@/db";
-import { desc, eq, not } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { success } from "zod";
 import { mutationRateLimiter } from "./middleware/rateLimiter";
+import { authMiddleware } from "./middleware/auth";
 import { createNoteSchema, updateNoteSchema } from "@/utils/validation";
 
 const notes = new Hono();
@@ -119,7 +119,7 @@ notes.get("/:slug", async (c) => {
 });
 
 // POST /notes - create note
-notes.post("/", mutationRateLimiter, async (c) => {
+notes.post("/", authMiddleware, mutationRateLimiter, async (c) => {
   try {
     const body = await c.req.json();
     const parsed = createNoteSchema.safeParse(body);
@@ -183,7 +183,7 @@ notes.post("/", mutationRateLimiter, async (c) => {
 });
 
 // PUT /notes/:id - update note
-notes.put("/:id", mutationRateLimiter, async (c) => {
+notes.put("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = Number(c.req.param("id"));
 
   if (isNaN(id)) {
@@ -259,7 +259,7 @@ notes.put("/:id", mutationRateLimiter, async (c) => {
 });
 
 // DELETE /notes/:id - delete note
-notes.delete("/:id", mutationRateLimiter, async (c) => {
+notes.delete("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = Number(c.req.param("id"));
 
   if (isNaN(id)) {

@@ -2,6 +2,7 @@ import { db, schema } from "@/db";
 import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { mutationRateLimiter } from "./middleware/rateLimiter";
+import { authMiddleware } from "./middleware/auth";
 import { createProjectSchema, updateProjectSchema } from "@/utils/validation";
 
 const projects = new Hono();
@@ -82,7 +83,7 @@ projects.get("/:id", async (c) => {
 });
 
 // POST /projects - create project
-projects.post("/", mutationRateLimiter, async (c) => {
+projects.post("/", authMiddleware, mutationRateLimiter, async (c) => {
   try {
     const body = await c.req.json();
     const parsed = createProjectSchema.safeParse(body);
@@ -148,7 +149,7 @@ projects.post("/", mutationRateLimiter, async (c) => {
 });
 
 // PUT /projects/:id - update project
-projects.put("/:id", mutationRateLimiter, async (c) => {
+projects.put("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = Number(c.req.param("id"));
 
   if (isNaN(id))
@@ -227,7 +228,7 @@ projects.put("/:id", mutationRateLimiter, async (c) => {
 });
 
 // DELETE /projects/:id - delete project
-projects.delete("/:id", mutationRateLimiter, async (c) => {
+projects.delete("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = Number(c.req.param("id"));
 
   if (isNaN(id))

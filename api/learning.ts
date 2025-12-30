@@ -2,6 +2,7 @@ import { db, schema } from "@/db";
 import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { mutationRateLimiter } from "./middleware/rateLimiter";
+import { authMiddleware } from "./middleware/auth";
 
 const learning = new Hono();
 
@@ -57,7 +58,7 @@ learning.get("/:id", async (c) => {
 });
 
 // POST /learning - create a new learning experience
-learning.post("/", mutationRateLimiter, async (c) => {
+learning.post("/", authMiddleware, mutationRateLimiter, async (c) => {
   try {
     const body = await c.req.json();
     const { year, title, skills } = body;
@@ -88,7 +89,7 @@ learning.post("/", mutationRateLimiter, async (c) => {
 });
 
 // PUT /learning/:id - update a learning experience
-learning.put("/:id", mutationRateLimiter, async (c) => {
+learning.put("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = Number(c.req.param("id"));
 
   if (isNaN(id))
@@ -124,8 +125,8 @@ learning.put("/:id", mutationRateLimiter, async (c) => {
   }
 });
 
-//DELETE /learning/:id - delete a learning experience
-learning.delete("/:id", mutationRateLimiter, async (c) => {
+// DELETE /learning/:id - delete a learning experience
+learning.delete("/:id", authMiddleware, mutationRateLimiter, async (c) => {
   const id = Number(c.req.param("id"));
 
   if (isNaN(id))
