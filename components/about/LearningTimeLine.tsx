@@ -70,8 +70,10 @@ export const LearningTimeLine = ({ data }: LearningTimeLineProps) => {
         <motion.div
           className="absolute left-[7px] md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-linear-to-b from-primary/20 via-primary to-primary/20 origin-top"
           variants={lineVariants}
-        >
-          {learningData.map((experience, index) => {
+        />
+
+        {/* Timeline items */}
+        {learningData.map((experience, index) => {
             const isRight = index % 2 === 0;
             return (
               <motion.div
@@ -166,7 +168,6 @@ export const LearningTimeLine = ({ data }: LearningTimeLineProps) => {
               </motion.div>
             );
           })}
-        </motion.div>
       </motion.div>
     </div>
   );
