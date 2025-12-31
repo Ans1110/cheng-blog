@@ -3,3 +3,4 @@ export { ProjectEditor } from "./ProjectEditor";
 export { CategoryEditor } from "./CategoryEditor";
 export { NoteEditor } from "./NoteEditor";
 export { LearningEditor } from "./LearningEditor";
+export { AdminLayoutClient } from "./AdminLayoutClient";
