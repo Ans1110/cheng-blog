@@ -6,7 +6,6 @@ import { ArrowLeft, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { format } from "date-fns";
-import { Card, CardContent } from "../ui/card";
 import MarkdownRenderer from "../markdown/MarkDownRenderer";
 
 interface NoteContentProps {
@@ -62,13 +61,12 @@ export const NoteContent = ({ note, category }: NoteContentProps) => {
       </header>
 
       {/* Content */}
-      <Card className="border-border/50">
-        <CardContent className="pt-8 pb-12">
-          <article className="prose prose-zinc dark:prose-invert max-w-none">
-            <MarkdownRenderer content={note.content} />
-          </article>
-        </CardContent>
-      </Card>
+
+      <div className="border-border/50 bg-zinc-950/50 p-4 rounded-lg">
+        <div className="prose prose-zinc dark:prose-invert prose-lg max-w-none">
+          <MarkdownRenderer content={note.content} />
+        </div>
+      </div>
 
       {/* Footer navigation */}
       <div className="mt-10 pt-8 border-t">
