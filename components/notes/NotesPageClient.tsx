@@ -12,6 +12,9 @@ import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { format } from "date-fns";
+import { Pagination } from "../ui/pagination";
+
+const ITEMS_PER_PAGE = 6;
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -64,6 +67,29 @@ export const NotesPageClient = ({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handleCategorySelect = (categoryId: string | null) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
+  };
+
+  const handleTagSelect = (tag: string | null) => {
+    setSelectedTag(tag);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
+  const handleReset = () => {
+    setSelectedCategory(null);
+    setSelectedTag(null);
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
 
   const allTags = useMemo(() => {
     if (!notes) return [];
@@ -90,9 +116,20 @@ export const NotesPageClient = ({
     });
   }, [notes, selectedCategory, selectedTag, searchQuery]);
 
+  const totalPages = Math.ceil(filteredNotes.length / ITEMS_PER_PAGE);
+  const paginatedNotes = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredNotes.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredNotes, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   if (!selectedCategory && !selectedTag) {
     return (
-      <div className="container py-12 space-y-10 h-screen">
+      <div className="container py-12 space-y-10 min-h-screen">
         <motion.div
           className="space-y-3"
           initial="hidden"
@@ -117,7 +154,7 @@ export const NotesPageClient = ({
           <Input
             placeholder="Search notes..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-10 h-11"
           />
         </motion.div>
@@ -142,7 +179,7 @@ export const NotesPageClient = ({
                 >
                   <Badge
                     variant="outline"
-                    onClick={() => setSelectedTag(tag)}
+                    onClick={() => handleTagSelect(tag)}
                     className="cursor-pointer transition-all hover:scale-105 px-3 py-1"
                   >
                     {tag}
@@ -161,54 +198,62 @@ export const NotesPageClient = ({
             {filteredNotes.length === 0 ? (
               <p className="text-muted-foreground">No notes found.</p>
             ) : (
-              filteredNotes.map((note, index) => (
-                <motion.div
-                  key={note.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.4,
-                    delay: index * 0.08,
-                    ease: "easeOut",
-                  }}
-                >
-                  <Link href={`/notes/${note.slug}`}>
-                    <Card className="hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/30">
-                      <CardHeader className="cursor-pointer">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="space-y-2 flex-1">
-                            <CardTitle className="text-lg">
-                              {note.title}
-                            </CardTitle>
-                            <CardDescription className="flex flex-wrap items-center gap-2">
-                              <span className="text-xs">
-                                {format(
-                                  new Date(note.createdAt),
-                                  "MMM d, yyyy"
+              <>
+                {paginatedNotes.map((note, index) => (
+                  <motion.div
+                    key={note.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: index * 0.08,
+                      ease: "easeOut",
+                    }}
+                  >
+                    <Link href={`/notes/${note.slug}`}>
+                      <Card className="hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/30">
+                        <CardHeader className="cursor-pointer">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="space-y-2 flex-1">
+                              <CardTitle className="text-lg">
+                                {note.title}
+                              </CardTitle>
+                              <CardDescription className="flex flex-wrap items-center gap-2">
+                                <span className="text-xs">
+                                  {format(
+                                    new Date(note.createdAt),
+                                    "MMM d, yyyy"
+                                  )}
+                                </span>
+                                {note.tags && note.tags.length > 0 && (
+                                  <div className="flex flex-wrap gap-1">
+                                    {note.tags.map((tag) => (
+                                      <Badge
+                                        key={tag}
+                                        variant="secondary"
+                                        className="text-xs"
+                                      >
+                                        {tag}
+                                      </Badge>
+                                    ))}
+                                  </div>
                                 )}
-                              </span>
-                              {note.tags && note.tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1">
-                                  {note.tags.map((tag) => (
-                                    <Badge
-                                      key={tag}
-                                      variant="secondary"
-                                      className="text-xs"
-                                    >
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
-                            </CardDescription>
+                              </CardDescription>
+                            </div>
+                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
                           </div>
-                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  </Link>
-                </motion.div>
-              ))
+                        </CardHeader>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                ))}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  className="mt-8"
+                />
+              </>
             )}
           </div>
         ) : (
@@ -229,7 +274,7 @@ export const NotesPageClient = ({
                       count === 0 && "opacity-50 pointer-events-none"
                     )}
                     onClick={() =>
-                      count > 0 && setSelectedCategory(category.id)
+                      count > 0 && handleCategorySelect(category.id)
                     }
                   >
                     <CardHeader className="space-y-4 p-6">
@@ -259,7 +304,7 @@ export const NotesPageClient = ({
   }
 
   return (
-    <div className="container py-12 space-y-10 h-screen">
+    <div className="container py-12 space-y-10 min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -267,11 +312,7 @@ export const NotesPageClient = ({
         className="space-y-4"
       >
         <button
-          onClick={() => {
-            setSelectedCategory(null);
-            setSelectedTag(null);
-            setSearchQuery("");
-          }}
+          onClick={handleReset}
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="size-4" />
@@ -284,8 +325,8 @@ export const NotesPageClient = ({
               ? categories.find((c) => c.id === selectedCategory)?.name ||
                 selectedCategory
               : selectedTag
-              ? `Tag: ${selectedTag}`
-              : "Search Results"}
+                ? `Tag: ${selectedTag}`
+                : "Search Results"}
           </h1>
           <p className="text-muted-foreground">
             {selectedCategory
@@ -307,7 +348,7 @@ export const NotesPageClient = ({
           <Input
             placeholder="Search in notes..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -316,7 +357,7 @@ export const NotesPageClient = ({
           <Badge
             variant="default"
             className="cursor-pointer self-start"
-            onClick={() => setSelectedTag(null)}
+            onClick={() => handleTagSelect(null)}
           >
             {selectedTag} <X className="size-3 ml-1" />
           </Badge>
@@ -341,7 +382,9 @@ export const NotesPageClient = ({
               <Badge
                 key={tag}
                 variant={selectedTag === tag ? "default" : "outline"}
-                onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                onClick={() =>
+                  handleTagSelect(selectedTag === tag ? null : tag)
+                }
                 className="cursor-pointer transition-all hover:scale-105"
               >
                 {tag}
@@ -362,50 +405,58 @@ export const NotesPageClient = ({
           </p>
         </motion.div>
       ) : (
-        <motion.div
-          key={`notes-list-${selectedCategory}-${selectedTag}`}
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-          className="space-y-4"
-        >
-          {filteredNotes.map((note) => (
-            <motion.div key={note.id} variants={itemVariants}>
-              <Link href={`/notes/${note.slug}`}>
-                <Card className="hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/30">
-                  <CardHeader className="cursor-pointer">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-2 flex-1">
-                        <CardTitle className="text-lg group-hover:text-primary transition-colors">
-                          {note.title}
-                        </CardTitle>
-                        <CardDescription className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs">
-                            {format(new Date(note.createdAt), "MMM d, yyyy")}
-                          </span>
-                          {note.tags && note.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1">
-                              {note.tags.map((tag) => (
-                                <Badge
-                                  key={tag}
-                                  variant="secondary"
-                                  className="text-xs"
-                                >
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </CardDescription>
+        <>
+          <motion.div
+            key={`notes-list-${selectedCategory}-${selectedTag}-${currentPage}`}
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="space-y-4"
+          >
+            {paginatedNotes.map((note) => (
+              <motion.div key={note.id} variants={itemVariants}>
+                <Link href={`/notes/${note.slug}`}>
+                  <Card className="hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/30">
+                    <CardHeader className="cursor-pointer">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-2 flex-1">
+                          <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                            {note.title}
+                          </CardTitle>
+                          <CardDescription className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs">
+                              {format(new Date(note.createdAt), "MMM d, yyyy")}
+                            </span>
+                            {note.tags && note.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {note.tags.map((tag) => (
+                                  <Badge
+                                    key={tag}
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </CardDescription>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
                       </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                  </CardHeader>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
+                    </CardHeader>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            className="mt-8"
+          />
+        </>
       )}
     </div>
   );

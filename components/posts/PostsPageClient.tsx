@@ -15,6 +15,9 @@ import {
   CardTitle,
 } from "../ui/card";
 import { format } from "date-fns";
+import { Pagination } from "../ui/pagination";
+
+const ITEMS_PER_PAGE = 9;
 
 const headerVariants: Variants = {
   hidden: { opacity: 0, y: -20 },
@@ -32,6 +35,17 @@ interface PostsPageClientProps {
 export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  function handleTagSelect(tag: string | null) {
+    setSelectedTag(tag);
+    setCurrentPage(1);
+  }
+
+  function handleSearchChange(value: string) {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  }
 
   const allTags = useMemo(() => {
     if (!posts) return [];
@@ -54,8 +68,19 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
     });
   }, [posts, selectedTag, searchQuery]);
 
+  const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
+  const paginatedPosts = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredPosts, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <div className="container py-12 space-y-10 h-screen">
+    <div className="container py-12 space-y-10 min-h-screen">
       {/* Header */}
       <motion.div
         className="space-y-3"
@@ -82,7 +107,7 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
           <Input
             placeholder="Search posts by title or excerpt..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="max-w-md h-11 text-base"
           />
         </div>
@@ -96,7 +121,7 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
           >
             <Badge
               variant={!selectedTag ? "default" : "outline"}
-              onClick={() => setSelectedTag(null)}
+              onClick={() => handleTagSelect(null)}
               className="cursor-pointer transition-all hover:scale-105 px-4 py-1.5"
             >
               All
@@ -110,7 +135,7 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
               >
                 <Badge
                   variant={selectedTag === tag ? "default" : "outline"}
-                  onClick={() => setSelectedTag(tag)}
+                  onClick={() => handleTagSelect(tag)}
                   className="cursor-pointer transition-all hover:scale-105 px-4 py-1.5"
                 >
                   {tag}
@@ -132,54 +157,66 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
           <p className="text-muted-foreground text-lg">No posts found.</p>
         </motion.div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredPosts?.map((post, index) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1, ease: "easeOut" }}
-            >
-              <Link href={`/posts/${post.slug}`}>
-                <Card className="h-full hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 border-border/50 group">
-                  <CardHeader className="space-y-3">
-                    <CardTitle className="line-clamp-2 text-xl group-hover:text-primary transition-colors">
-                      {post.title}
-                    </CardTitle>
-                    <CardDescription className="text-sm">
-                      {format(new Date(post.createdAt), "MMMM d, yyyy")}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {post.excerpt && (
-                      <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
-                        {post.excerpt}
-                      </p>
-                    )}
-                    {post.tags && post.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        {post.tags.slice(0, 3).map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                        {post.tags.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{post.tags.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+        <>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {paginatedPosts?.map((post, index) => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.1,
+                  ease: "easeOut",
+                }}
+              >
+                <Link href={`/posts/${post.slug}`}>
+                  <Card className="h-full hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 border-border/50 group">
+                    <CardHeader className="space-y-3">
+                      <CardTitle className="line-clamp-2 text-xl group-hover:text-primary transition-colors">
+                        {post.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {format(new Date(post.createdAt), "MMMM d, yyyy")}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {post.excerpt && (
+                        <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
+                          {post.excerpt}
+                        </p>
+                      )}
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-2">
+                          {post.tags.slice(0, 3).map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                          {post.tags.length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{post.tags.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            className="mt-8"
+          />
+        </>
       )}
     </div>
   );
