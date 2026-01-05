@@ -62,7 +62,7 @@ export const NoteContent = ({ note, category }: NoteContentProps) => {
 
       {/* Content */}
 
-      <div className="border-border/50 bg-zinc-950/50 p-4 rounded-lg">
+      <div className="border-border/50 bg-accent dark:bg-zinc-950/50 p-4 rounded-lg">
         <div className="prose prose-zinc dark:prose-invert prose-lg max-w-none">
           <MarkdownRenderer content={note.content} />
         </div>
