@@ -52,7 +52,7 @@ function ProjectCard({ project, className }: ProjectCardProps) {
       </div>
 
       {/* Content Section */}
-      <div className="bg-[#F2F2F2] dark:bg-card p-6 space-y-4">
+      <div className="bg-card p-6 space-y-4">
         <h3 className="text-2xl font-bold text-muted-foreground dark:text-foreground">
           {project.title}
         </h3>
