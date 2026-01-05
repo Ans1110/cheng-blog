@@ -52,11 +52,11 @@ function ProjectCard({ project, className }: ProjectCardProps) {
       </div>
 
       {/* Content Section */}
-      <div className="bg-[#171717] dark:bg-card p-6 space-y-4">
-        <h3 className="text-2xl font-bold text-white dark:text-foreground">
+      <div className="bg-accent dark:bg-card p-6 space-y-4">
+        <h3 className="text-2xl font-bold text-muted-foreground dark:text-foreground">
           {project.title}
         </h3>
-        <p className="text-[#AAAAAA] dark:text-muted-foreground text-sm leading-relaxed line-clamp-3">
+        <p className="text-muted-foreground/70 dark:text-muted-foreground text-sm leading-relaxed line-clamp-3">
           {project.description}
         </p>
 
