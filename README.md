@@ -1,3 +1,3 @@
 # Cheng Blog
 
-My personal blog: https://cheng-blog.zeabur.app
+My personal blog: https://cheng-blog.up.railway.app/
