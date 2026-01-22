@@ -270,7 +270,7 @@ export const NotesPageClient = ({
                 <motion.div key={category.id} variants={folderVariants}>
                   <Card
                     className={cn(
-                      "cursor-pointer transition-all duration-300 hover:shadow-md group h-full border-border/50 hover:border-primary/30 min-h-[160px]",
+                      "cursor-pointer transition-all duration-300 hover:shadow-md group h-full border-border/50 hover:border-primary/30 min-h-40",
                       count === 0 && "opacity-50 pointer-events-none"
                     )}
                     onClick={() =>
@@ -325,8 +325,8 @@ export const NotesPageClient = ({
               ? categories.find((c) => c.id === selectedCategory)?.name ||
                 selectedCategory
               : selectedTag
-                ? `Tag: ${selectedTag}`
-                : "Search Results"}
+              ? `Tag: ${selectedTag}`
+              : "Search Results"}
           </h1>
           <p className="text-muted-foreground">
             {selectedCategory
