@@ -3,6 +3,7 @@ import {
   index,
   int,
   json,
+  longtext,
   mysqlTable,
   text,
   timestamp,
@@ -25,7 +26,7 @@ export const posts = mysqlTable(
   (table) => [
     index("posts_published_idx").on(table.published),
     index("posts_created_at_idx").on(table.createdAt),
-  ]
+  ],
 );
 
 export const notes = mysqlTable(
@@ -34,7 +35,7 @@ export const notes = mysqlTable(
     id: int("id").primaryKey().autoincrement(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     title: varchar("title", { length: 255 }).notNull(),
-    content: text("content").notNull(),
+    content: longtext("content").notNull(),
     category: varchar("category", { length: 100 }).notNull(),
     tags: json("tags").$type<string[]>().default([]),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -43,7 +44,7 @@ export const notes = mysqlTable(
   (table) => [
     index("notes_created_at_idx").on(table.createdAt),
     index("notes_category_idx").on(table.category),
-  ]
+  ],
 );
 
 export const noteCategories = mysqlTable("note_categories", {
@@ -68,7 +69,7 @@ export const sessions = mysqlTable(
     expiresAt: timestamp("expires_at").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [index("sessions_token_idx").on(table.token)]
+  (table) => [index("sessions_token_idx").on(table.token)],
 );
 
 export type Session = typeof sessions.$inferSelect;
@@ -87,7 +88,7 @@ export const projects = mysqlTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [index("projects_created_at_idx").on(table.createdAt)]
+  (table) => [index("projects_created_at_idx").on(table.createdAt)],
 );
 
 export const learningExperiences = mysqlTable(
@@ -100,7 +101,7 @@ export const learningExperiences = mysqlTable(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => [index("learning_experiences_year_idx").on(table.year)]
+  (table) => [index("learning_experiences_year_idx").on(table.year)],
 );
 
 export type Post = typeof posts.$inferSelect;
