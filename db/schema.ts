@@ -35,7 +35,7 @@ export const notes = mysqlTable(
     id: int("id").primaryKey().autoincrement(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     title: varchar("title", { length: 255 }).notNull(),
-    content: longtext("content").notNull(),
+    content: text("content").notNull(),
     category: varchar("category", { length: 100 }).notNull(),
     tags: json("tags").$type<string[]>().default([]),
     createdAt: timestamp("created_at").notNull().defaultNow(),
