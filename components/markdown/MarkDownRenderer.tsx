@@ -30,13 +30,13 @@ export const MarkdownRenderer = ({
               href={href}
               target={href?.startsWith("http") ? "_blank" : undefined}
               rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="text-primary hover:underline"
+              className="text-[var(--glow)] underline-offset-4 hover:underline"
             >
               {children}
             </a>
           ),
           pre: ({ children }) => (
-            <pre className="bg-zinc-900 text-zinc-100 rounded-lg p-4 overflow-x-auto">
+            <pre className="bg-[var(--code-bg)] text-zinc-100 rounded-2xl p-4 overflow-x-auto border border-[var(--glass-border)] shadow-[0_10px_40px_-15px_var(--dream-lilac)]">
               {children}
             </pre>
           ),
@@ -59,13 +59,13 @@ export const MarkdownRenderer = ({
             );
           },
           h1: ({ children }) => (
-            <h1 className="text-3xl font-bold mt-8 mb-4">{children}</h1>
+            <h1 className="font-display text-4xl font-normal mt-10 mb-4">{children}</h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-2xl font-semibold mt-6 mb-3">{children}</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-normal mt-10 mb-3">{children}</h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-xl font-semibold mt-4 mb-2">{children}</h3>
+            <h3 className="font-display italic text-2xl md:text-3xl font-normal mt-8 mb-2">{children}</h3>
           ),
           p: ({ children }) => <p className="my-3 leading-7">{children}</p>,
           ul: ({ children }) => (
@@ -78,7 +78,7 @@ export const MarkdownRenderer = ({
             <li className="leading-7 [&>p]:my-1 [&>p]:inline">{children}</li>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-primary/50 pl-4 italic my-4 text-muted-foreground">
+            <blockquote className="border-l-2 border-[var(--dream-lilac)] pl-4 italic my-4 text-muted-foreground">
               {children}
             </blockquote>
           ),
@@ -104,7 +104,7 @@ export const MarkdownRenderer = ({
                 alt={alt || ""}
                 width={800}
                 height={600}
-                className="rounded-lg max-w-full h-auto mx-auto object-contain"
+                className="rounded-2xl max-w-full h-auto mx-auto object-contain"
                 unoptimized
               />
             </span>

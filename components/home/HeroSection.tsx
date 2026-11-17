@@ -1,103 +1,122 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
-import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
+import { useRef } from "react";
+import { ArrowRight, ChevronDown } from "lucide-react";
+import { MaskImage } from "../dream/MaskImage";
+
+const TITLE = "Cheng";
 
 export const HeroSection = () => {
-  const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    setMounted(true);
-  }, []);
-
-  const isDark = mounted && theme === "dark";
+  // Scrolling away dissolves the hero like waking up
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  const titleBlur = useTransform(scrollYProgress, [0.25, 0.9], ["blur(0px)", "blur(12px)"]);
+  const fade = useTransform(scrollYProgress, [0.15, 0.8], [1, 0]);
+  const wingsY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const haloScale = useTransform(scrollYProgress, [0, 1], [1, 1.5]);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-linear-to-b from-muted/50 to-background">
-      {/* Wave Background */}
-      <div className="absolute inset-0 z-0">
-        <svg
-          className="absolute bottom-0 w-full h-auto"
-          viewBox="0 0 1440 320"
-          preserveAspectRatio="none"
-        >
-          <path
-            fill="currentColor"
-            className="text-muted/30"
-            d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-          />
-          <path
-            fill="currentColor"
-            className="text-muted/20"
-            d="M0,256L48,261.3C96,267,192,277,288,272C384,267,480,245,576,224C672,203,768,181,864,186.7C960,192,1056,224,1152,218.7C1248,213,1344,171,1392,149.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-          />
-        </svg>
-      </div>
+    <section
+      ref={ref}
+      className="relative min-h-[calc(100svh-5rem)] flex items-center justify-center overflow-hidden"
+    >
+      {/* Halo ring behind the title */}
+      <motion.div
+        aria-hidden
+        style={{ scale: haloScale, opacity: fade }}
+        className="absolute size-[min(80vw,560px)] rounded-full"
+      >
+        <div className="absolute inset-0 rounded-full animate-halo opacity-70 blur-2xl bg-[conic-gradient(from_0deg,var(--dream-pink),var(--dream-lilac),var(--dream-blue),var(--dream-mint),var(--dream-butter),var(--dream-pink))]" />
+        <div className="absolute inset-[12%] rounded-full bg-background/80 blur-xl" />
+      </motion.div>
 
-      {/* Content */}
-      <div className="relative z-10 container text-center px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+      {/* Floating pixel wings */}
+      <motion.div
+        aria-hidden
+        style={{ y: wingsY, opacity: fade }}
+        className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-[4vw] md:px-[10vw] pointer-events-none"
+      >
+        <div className="animate-float">
+          <MaskImage src="/left_wing.svg" className="w-16 h-28 md:w-28 md:h-48 lg:w-32 lg:h-56 opacity-80" />
+        </div>
+        <div className="animate-float [animation-delay:-3.5s]">
+          <MaskImage src="/right_wing.svg" className="w-16 h-28 md:w-28 md:h-48 lg:w-32 lg:h-56 opacity-80" />
+        </div>
+      </motion.div>
+
+      <motion.div
+        style={{ y: titleY, filter: titleBlur, opacity: fade }}
+        className="relative z-10 container text-center"
+      >
+        <motion.p
+          initial={{ opacity: 0, letterSpacing: "0.6em" }}
+          animate={{ opacity: 1, letterSpacing: "0.24em" }}
+          transition={{ duration: 1.4, ease: "easeOut" }}
+          className="eyebrow mb-6"
         >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <Image
-              src="/left_wing.svg"
-              alt="Left wing"
-              width={80}
-              height={80}
-              className="w-16 h-25 md:w-20 md:h-20 lg:w-24 lg:h-24"
-            />
-            <h1
-              className={`text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight ${
-                isDark ? "text-white" : ""
-              }`}
-              style={
-                isDark
-                  ? {
-                      textShadow: `
-                  0 0 10px rgba(255, 255, 255, 0.3),
-                  0 0 20px rgba(255, 255, 255, 0.2),
-                  0 0 40px rgba(255, 255, 255, 0.1)
-                `,
-                    }
-                  : undefined
-              }
+          ✧ blog ✧
+        </motion.p>
+
+        <h1
+          aria-label={TITLE}
+          className="font-display italic leading-[0.85] text-[clamp(5rem,20vw,13rem)] tracking-tight"
+        >
+          {TITLE.split("").map((ch, i) => (
+            <motion.span
+              key={i}
+              aria-hidden
+              initial={{ opacity: 0, y: 40, filter: "blur(16px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ delay: 0.25 + i * 0.09, duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-block text-dream pr-[0.04em]"
             >
-              Explore. Focus. Improve.
-            </h1>
-            <Image
-              src="/right_wing.svg"
-              alt="Right wing"
-              width={80}
-              height={80}
-              className="w-16 h-25 md:w-20 md:h-20 lg:w-24 lg:h-24"
-            />
-          </div>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Some days waiting for light, some days learning to land.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/notes">
-              <Button size="lg" className="min-w-[160px]">
-                My Notes
-              </Button>
-            </Link>
-            <Link href="/about">
-              <Button size="lg" variant="outline" className="min-w-[160px]">
-                About Me
-              </Button>
-            </Link>
-          </div>
+              {ch}
+            </motion.span>
+          ))}
+        </h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.8 }}
+          className="mt-6 text-base md:text-lg text-muted-foreground max-w-md mx-auto"
+        >
+          Notes on code and the things I&rsquo;m learning.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1, duration: 0.8 }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-3"
+        >
+          <Link href="/posts" className="btn-dream group">
+            Read posts
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+          <Link
+            href="/notes"
+            className="glass rounded-full px-6 py-3 font-semibold hover:-translate-y-0.5 transition-transform"
+          >
+            Browse notes
+          </Link>
         </motion.div>
-      </div>
+      </motion.div>
+
+      {/* Scroll cue */}
+      <motion.div
+        aria-hidden
+        style={{ opacity: fade }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-muted-foreground"
+      >
+        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}>
+          <ChevronDown className="size-5" />
+        </motion.div>
+      </motion.div>
     </section>
   );
 };

@@ -1,174 +1,74 @@
 "use client";
 
 import { Learning } from "@/types/learning";
-import { motion, Variants } from "framer-motion";
-import { Card, CardContent } from "../ui/card";
-import { SkillsList } from "./SkillsList";
+import { motion, useScroll, useSpring, type Variants } from "framer-motion";
+import { useRef } from "react";
+import { SectionHeader } from "../ui/section-header";
 
 interface LearningTimeLineProps {
   data: Learning[];
 }
 
-const timelineVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.3,
-    },
-  },
-};
-
-const yearVariants: Variants = {
-  hidden: { opacity: 0, x: -50 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
-
-const lineVariants: Variants = {
-  hidden: { scaleY: 0 },
-  visible: {
-    scaleY: 1,
-    transition: { duration: 0.8, ease: "easeOut" },
-  },
+const fadeIn: Variants = {
+  hidden: { opacity: 0, x: -20, filter: "blur(8px)" },
+  visible: { opacity: 1, x: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
 };
 
 export const LearningTimeLine = ({ data }: LearningTimeLineProps) => {
-  const learningData = data && data.length > 0 ? data : [];
+  const ref = useRef<HTMLOListElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 80%", "end 60%"] });
+  const lineScale = useSpring(scrollYProgress, { stiffness: 100, damping: 25 });
 
-  if (learningData.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        No learning data available
-      </p>
-    );
-  }
+  const sorted = [...(data ?? [])].sort((a, b) => b.year - a.year);
 
   return (
-    <div className="relative">
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.6 }}
-        className="text-2xl md:text-3xl font-bold text-center mb-12"
-      >
-        Learning Journey
-      </motion.h2>
+    <>
+      <SectionHeader title="Journey" />
 
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        variants={timelineVariants}
-        className="relative"
-      >
-        {/* Vertical line - left on mobile, center on desktop */}
-        <motion.div
-          className="absolute left-[7px] md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-linear-to-b from-primary/20 via-primary to-primary/20 origin-top"
-          variants={lineVariants}
-        />
+      {sorted.length === 0 ? (
+        <p className="text-muted-foreground">Nothing here yet.</p>
+      ) : (
+        <ol ref={ref} className="relative pl-8 md:pl-12 space-y-6">
+          {/* Track + glowing fill that grows as you scroll */}
+          <span aria-hidden className="absolute left-2.5 md:left-4 top-2 bottom-2 w-px bg-border" />
+          <motion.span
+            aria-hidden
+            style={{ scaleY: lineScale }}
+            className="absolute left-2.5 md:left-4 top-2 bottom-2 w-px origin-top bg-[linear-gradient(180deg,var(--dream-pink),var(--dream-lilac),var(--dream-blue))] shadow-[0_0_12px_1px_var(--dream-lilac)]"
+          />
 
-        {/* Timeline items */}
-        {learningData.map((experience, index) => {
-          const isRight = index % 2 === 0;
-          return (
-            <motion.div
-              key={experience.year}
-              variants={yearVariants}
-              className="relative mb-12 last:mb-0"
+          {sorted.map((entry) => (
+            <motion.li
+              key={entry.id}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-60px" }}
+              variants={fadeIn}
+              className="relative"
             >
-              {/* center dot */}
-              <motion.div
-                className="absolute left-0 md:left-1/2 md:-translate-x-1/2 top-0 w-4 h-4 rounded-full bg-primary border-4 border-background shadow-lg z-20"
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 + 0.2, duration: 0.3 }}
+              <span
+                aria-hidden
+                className="absolute -left-8 md:-left-12 top-6 ml-[5px] md:ml-[11px] size-3 rounded-full bg-[var(--dream-pink)] shadow-[0_0_14px_3px_var(--dream-pink)] animate-pulse"
               />
-
-              {/*  Mobile layout */}
-              <div className="md:hidden pl-8">
-                <div className="mb-2">
-                  <span className="text-2xl font-bold text-primary">
-                    {experience.year}
-                  </span>
-                  <span className="text-muted-foreground ml-3">
-                    {experience.title}
-                  </span>
+              <div className="glass rounded-3xl p-6 md:p-7">
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-4">
+                  <span className="font-display italic text-4xl text-dream leading-none">{entry.year}</span>
+                  <span className="text-muted-foreground">{entry.title}</span>
                 </div>
-                <Card className="group border-border/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:border-primary/30">
-                  <CardContent className="p-4">
-                    <SkillsList skills={experience.skills} />
-                  </CardContent>
-                </Card>
+                {entry.skills && entry.skills.length > 0 && (
+                  <ul className="flex flex-wrap gap-2">
+                    {entry.skills.map((skill) => (
+                      <li key={skill} className="pill">
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-
-              {/* Desktop layout */}
-              <div className="hidden md:grid md:grid-cols-2 md:gap-8">
-                {/* Left side */}
-                <div className={`${isRight ? "text-right pr-8" : "pl-8"}`}>
-                  {!isRight ? (
-                    <Card className="group border-border/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:border-primary/30">
-                      <CardContent className="p-4">
-                        <div className="mb-3">
-                          <span className="text-2xl font-bold text-primary group-hover:text-foreground transition-colors duration-300">
-                            {experience.year}
-                          </span>
-                          <span className="text-muted-foreground group-hover:text-foreground/80 ml-3 transition-colors duration-300">
-                            {experience.title}
-                          </span>
-                        </div>
-                        <SkillsList skills={experience.skills} />
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <div className="pt-1">
-                      <span className="text-3xl font-bold text-primary">
-                        {experience.year}
-                      </span>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {experience.title}
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right side */}
-                <div className={`${isRight ? "pl-8" : "text-right pr-8"}`}>
-                  {isRight ? (
-                    <Card className="group border-border/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:border-primary/30">
-                      <CardContent className="p-4">
-                        <div className="mb-3">
-                          <span className="text-2xl font-bold text-primary group-hover:text-foreground transition-colors duration-300">
-                            {experience.year}
-                          </span>
-                          <span className="text-muted-foreground group-hover:text-foreground/80 ml-3 transition-colors duration-300">
-                            {experience.title}
-                          </span>
-                        </div>
-                        <SkillsList skills={experience.skills} />
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <div className="pt-1">
-                      <span className="text-3xl font-bold text-primary">
-                        {experience.year}
-                      </span>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {experience.title}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
-    </div>
+            </motion.li>
+          ))}
+        </ol>
+      )}
+    </>
   );
 };
