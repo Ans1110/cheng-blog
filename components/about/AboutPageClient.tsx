@@ -1,147 +1,160 @@
 "use client";
 
 import { Learning } from "@/types/learning";
-import { Variants } from "framer-motion";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { motion, type Variants } from "framer-motion";
+import { useInterests } from "@/hooks/useInterests";
+import { ArrowUpRight, Github, Instagram, Mail } from "lucide-react";
 import { LearningTimeLine } from "./LearningTimeLine";
+import { PageHeader } from "../dream/PageParts";
+import { SectionHeader } from "../ui/section-header";
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+const bubbleColors = [
+  "var(--dream-pink)",
+  "var(--dream-lilac)",
+  "var(--dream-blue)",
+  "var(--dream-mint)",
+  "var(--dream-butter)",
+];
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
-const headerVariants: Variants = {
-  hidden: { opacity: 0, y: -30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
+const stagger: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
 };
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
+// TODO: replace with your real Instagram profile URL
+const links = [
+  {
+    href: "https://www.instagram.com/your_handle",
+    label: "Instagram",
+    icon: Instagram,
+    external: true,
   },
-};
+  {
+    href: "https://github.com/Ans1110",
+    label: "GitHub",
+    icon: Github,
+    external: true,
+  },
+  {
+    href: "mailto:bo99645bo@gmail.com",
+    label: "Email",
+    icon: Mail,
+    external: false,
+  },
+];
 
 interface AboutPageClientProps {
   data: Learning[];
 }
 
 export const AboutPageClient = ({ data }: AboutPageClientProps) => {
+  const { data: interests = [] } = useInterests();
+
   return (
-    <div className="container max-w-4xl py-12 space-y-10">
-      {/*  Header */}
+    <div className="container pb-16">
+      <PageHeader title="About" />
+
       <motion.div
         initial="hidden"
         animate="visible"
-        variants={headerVariants}
-        className="space-y-4 text-center"
+        variants={stagger}
+        className="grid md:grid-cols-5 gap-5 max-w-4xl mx-auto"
       >
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-          About Me
-        </h1>
-        <motion.p
-          className="text-lg text-muted-foreground max-w-2xl mx-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        ></motion.p>
-      </motion.div>
-
-      {/*  Cards grid */}
-      <motion.div
-        className="grid gap-6 md:grid-cols-2"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
-        <motion.div variants={itemVariants}>
-          <Card className="hover:shadow-lg transition-shadow duration-300 border-border/50 h-full">
-            <CardHeader>
-              <CardTitle className="text-xl">Introduction</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-zinc dark:prose-invert max-w-none">
-              <p className="text-muted-foreground leading-relaxed">
-                Hi! I&apos;m Cheng, enjoy exploring new technologies, solving
-                everyday problems with code, and building things I genuinely
-                enjoy. This blog is a place for me to share what I learn during
-                development and some of my thoughts along the way.
-              </p>
-              <p className="text-muted-foreground leading-relaxed mt-4"></p>
-            </CardContent>
-          </Card>
+        <motion.div
+          variants={fadeUp}
+          className="md:col-span-3 glass rounded-3xl p-7 md:p-9"
+        >
+          <p className="text-lg md:text-xl leading-relaxed">
+            Hi, I&rsquo;m{" "}
+            <span className="font-display italic text-3xl text-dream">
+              Cheng
+            </span>
+            . I like exploring new technologies, solving everyday problems with
+            code, and building things I care about. This is where I write down
+            what I learn along the way.
+          </p>
         </motion.div>
 
-        <motion.div variants={itemVariants}>
-          <Card className="hover:shadow-lg transition-shadow duration-300 border-border/50 h-full">
-            <CardHeader>
-              <CardTitle className="text-xl">
-                What I&apos;m Working On
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <motion.div
-                className="flex flex-wrap gap-2"
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: { opacity: 0 },
-                  visible: {
-                    opacity: 1,
-                    transition: { staggerChildren: 0.05, delayChildren: 0.3 },
-                  },
-                }}
-              >
-                <ul className="space-y-1.5">
-                  <li className="flex items-center gap-2 text-base text-muted-foreground cursor-default">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <span>A second-year computer science student</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-base text-muted-foreground cursor-default">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <span>Learning Web3 technologies</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-base text-muted-foreground cursor-default">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <span>Hooked on Golang</span>
-                  </li>
-                </ul>
-              </motion.div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="md:col-span-2">
-          <Card className="hover:shadow-lg transition-shadow duration-300 border-border/50">
-            <CardHeader>
-              <CardTitle className="text-xl">Get in Touch</CardTitle>
-            </CardHeader>
-            <CardContent className="prose prose-zinc dark:prose-invert max-w-none">
-              <p className="text-muted-foreground leading-relaxed">
-                If you&apos;d like to connect, discuss ideas, collaborate on a
-                project, or simply talk about software development, feel free to
-                reach out. You can find me on GitHub or send me an email.
-                I&apos;m always open to meaningful conversations and knowledge
-                sharing.
-              </p>
-            </CardContent>
-          </Card>
+        <motion.div
+          variants={fadeUp}
+          className="md:col-span-2 glass rounded-3xl p-7 md:p-9"
+        >
+          <p className="eyebrow mb-4">Links</p>
+          <ul className="space-y-2">
+            {links.map(({ href, label, icon: Icon, external }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  {...(external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  className="group flex items-center gap-3 rounded-2xl px-3 py-2.5 -mx-3 font-semibold transition-colors hover:bg-[color-mix(in_oklch,var(--dream-lilac)_16%,transparent)]"
+                >
+                  <span className="flex size-9 items-center justify-center rounded-xl bg-[color-mix(in_oklch,var(--dream-lilac)_22%,transparent)]">
+                    <Icon className="size-4" />
+                  </span>
+                  <span className="flex-1">{label}</span>
+                  <ArrowUpRight className="size-4 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground" />
+                </a>
+              </li>
+            ))}
+          </ul>
         </motion.div>
       </motion.div>
 
-      {/*  Learning timeline */}
-      <LearningTimeLine data={data} />
+      {/* Interests — floating bubbles */}
+      {interests.length > 0 && (
+        <section className="mt-24 md:mt-32 max-w-4xl mx-auto">
+          <SectionHeader title="Interests" />
+          <motion.ul
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            variants={stagger}
+            className="flex flex-wrap justify-center gap-3 md:gap-4"
+          >
+            {interests.map(({ id, name: tag }, i) => {
+              const color = bubbleColors[i % bubbleColors.length];
+              return (
+                <motion.li key={id} variants={fadeUp}>
+                  <motion.span
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{
+                      duration: 3 + (i % 4) * 0.7,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.25,
+                    }}
+                    whileHover={{ scale: 1.15 }}
+                    className="inline-block rounded-full px-5 py-2 font-semibold cursor-default select-none backdrop-blur-md"
+                    style={{
+                      background: `color-mix(in oklch, ${color} 28%, transparent)`,
+                      border: `1px solid color-mix(in oklch, ${color} 60%, transparent)`,
+                      boxShadow: `0 8px 24px -10px ${color}, inset 0 1px 0 oklch(1 0 0 / 0.4)`,
+                    }}
+                  >
+                    {tag}
+                  </motion.span>
+                </motion.li>
+              );
+            })}
+          </motion.ul>
+        </section>
+      )}
+
+      <section className="mt-24 md:mt-32 max-w-4xl mx-auto">
+        <LearningTimeLine data={data} />
+      </section>
     </div>
   );
 };

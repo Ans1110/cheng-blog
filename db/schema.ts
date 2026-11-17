@@ -1,9 +1,12 @@
 import {
   boolean,
+  date,
+  double,
   index,
   int,
   json,
   longtext,
+  mysqlEnum,
   mysqlTable,
   text,
   timestamp,
@@ -55,6 +58,61 @@ export const noteCategories = mysqlTable("note_categories", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const interests = mysqlTable("interests", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 50 }).notNull().unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type DailyImage = { url: string; caption: string };
+
+export const dailyPosts = mysqlTable(
+  "daily_posts",
+  {
+    id: int("id").primaryKey().autoincrement(),
+    title: varchar("title", { length: 255 }).notNull(),
+    content: longtext("content").notNull(),
+    images: json("images").$type<DailyImage[]>().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [index("daily_posts_created_at_idx").on(table.createdAt)],
+);
+
+export const filmReviews = mysqlTable(
+  "film_reviews",
+  {
+    id: int("id").primaryKey().autoincrement(),
+    title: varchar("title", { length: 255 }).notNull(),
+    originalTitle: varchar("original_title", { length: 255 }),
+    year: int("year").notNull(),
+    kind: mysqlEnum("kind", ["movie", "series", "anime", "documentary"]).notNull(),
+    rating: double("rating").notNull(),
+    genres: json("genres").$type<string[]>().notNull(),
+    posterUrl: varchar("poster_url", { length: 500 }),
+    verdict: varchar("verdict", { length: 300 }).notNull(),
+    review: longtext("review").notNull(),
+    watchedAt: date("watched_at", { mode: "string" }).notNull(),
+    /** 1–5 when hand-picked for the Top 5 section, otherwise null. Unique among ranked films. */
+    topRank: int("top_rank"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [index("film_reviews_watched_at_idx").on(table.watchedAt)],
+);
+
+export const boardMessages = mysqlTable(
+  "board_messages",
+  {
+    id: int("id").primaryKey().autoincrement(),
+    content: varchar("content", { length: 500 }).notNull(),
+    /** Optional photo, only shown when the bubble is opened. */
+    imageUrl: varchar("image_url", { length: 500 }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [index("board_messages_created_at_idx").on(table.createdAt)],
+);
 
 export const admin = mysqlTable("admin", {
   id: int("id").primaryKey().autoincrement(),
@@ -120,3 +178,8 @@ export type NewProject = typeof projects.$inferInsert;
 
 export type LearningExperience = typeof learningExperiences.$inferSelect;
 export type NewLearningExperience = typeof learningExperiences.$inferInsert;
+
+export type Interest = typeof interests.$inferSelect;
+export type DailyPost = typeof dailyPosts.$inferSelect;
+export type FilmReview = typeof filmReviews.$inferSelect;
+export type BoardMessage = typeof boardMessages.$inferSelect;

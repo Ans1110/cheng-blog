@@ -76,6 +76,58 @@ export const updateNoteCategorySchema = z.object({
   icon: z.string().max(100).optional().nullable(),
 });
 
+export const createInterestSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(50),
+});
+
+export const dailyImageSchema = z.object({
+  url: z.string().url("Invalid image URL").max(500),
+  caption: z.string().max(300, "Caption must be 300 characters or less"),
+});
+
+export const createDailyPostSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").max(255),
+  content: z.string().max(100000),
+  images: z.array(dailyImageSchema).min(1, "Add at least one photo").max(20),
+});
+
+export const updateDailyPostSchema = createDailyPostSchema.partial();
+
+export type CreateDailyPostInput = z.infer<typeof createDailyPostSchema>;
+export type UpdateDailyPostInput = z.infer<typeof updateDailyPostSchema>;
+
+export const filmKinds = ["movie", "series", "anime", "documentary"] as const;
+
+export const createFilmReviewSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").max(255),
+  originalTitle: z.string().trim().max(255).optional().nullable(),
+  year: z.number().int().min(1880, "Year looks too early").max(2100, "Year looks too late"),
+  kind: z.enum(filmKinds),
+  rating: z.number().min(0).max(5).multipleOf(0.5, "Rating must be in half-star steps"),
+  genres: z.array(z.string().trim().min(1).max(50)).max(10),
+  posterUrl: z.string().url("Invalid poster URL").max(500).optional().nullable(),
+  verdict: z.string().trim().min(1, "Verdict is required").max(300),
+  review: z.string().max(100000),
+  watchedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Watched date must be YYYY-MM-DD"),
+  topRank: z.number().int().min(1).max(5).optional().nullable(),
+});
+
+export const updateFilmReviewSchema = createFilmReviewSchema.partial();
+
+export type CreateFilmReviewInput = z.infer<typeof createFilmReviewSchema>;
+export type UpdateFilmReviewInput = z.infer<typeof updateFilmReviewSchema>;
+
+export const createBoardMessageSchema = z
+  .object({
+    content: z.string().trim().max(500, "Message must be 500 characters or less"),
+    imageUrl: z.string().url("Invalid image URL").max(500).optional().nullable(),
+  })
+  .refine((m) => m.content.length > 0 || !!m.imageUrl, {
+    message: "Write a message or add a photo",
+  });
+
+export type CreateBoardMessageInput = z.infer<typeof createBoardMessageSchema>;
+
 export const searchSchema = z.object({
   q: z.string().min(1, "Query is required"),
   type: z.enum(["posts", "notes", "all"]).default("all"),
