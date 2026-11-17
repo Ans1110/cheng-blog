@@ -79,9 +79,11 @@ export const AboutPageClient = ({ data }: AboutPageClientProps) => {
             <span className="font-display italic text-3xl text-dream">
               Cheng
             </span>
-            . I like exploring new technologies, solving everyday problems with
-            code, and building things I care about. This is where I write down
-            what I learn along the way.
+            . I created this website to collect moments of my everyday life,
+            memories of the things and people I love, and thoughts from my
+            learning journey. From daily experiences and fan life to technical
+            articles and study notes, this little space is a reflection of who I
+            am — and a way to understand myself a little better along the way.
           </p>
         </motion.div>
 
