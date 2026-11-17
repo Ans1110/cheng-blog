@@ -13,6 +13,7 @@ const toolkit: Group[] = [
       { name: "TypeScript", icon: "/typescript.svg" },
       { name: "JavaScript", icon: "/javascript.svg" },
       { name: "Go", icon: "/go.svg" },
+      { name: "Python", icon: "/python.svg" },
     ],
   },
   {
@@ -23,6 +24,7 @@ const toolkit: Group[] = [
       { name: "Node.js", icon: "/nodedotjs.svg" },
       { name: "Hono", icon: "/hono.svg" },
       { name: "Gin", icon: "/gin.svg" },
+      { name: "FastAPI", icon: "/FastAPI.svg" },
       { name: "Tailwind CSS", icon: "/tailwindcss.svg" },
     ],
   },
@@ -34,6 +36,10 @@ const toolkit: Group[] = [
       { name: "React Query", icon: "/reactquery.svg" },
       { name: "React Hook Form", icon: "/reacthookform.svg" },
     ],
+  },
+  {
+    label: "AI & ML",
+    tools: [{ name: "PyTorch", icon: "/pytorch.svg" }],
   },
   {
     label: "Data & Infrastructure",
@@ -70,9 +76,9 @@ export const TechStackSection = () => {
                 <li
                   key={`${tool.name}-${i}`}
                   aria-hidden={i >= row.length}
-                  className="group holo glass rounded-2xl flex items-center gap-3 px-5 py-3.5 transition-transform duration-300 hover:-translate-y-1"
+                  className="glass rounded-2xl flex items-center gap-3 px-5 py-3.5"
                 >
-                  <span className="flex items-center justify-center size-8 rounded-xl bg-white/70 dark:bg-white/90 transition-transform duration-500 group-hover:rotate-[-8deg] group-hover:scale-110">
+                  <span className="flex items-center justify-center size-8 rounded-xl bg-white/70 dark:bg-white/90">
                     <Image src={tool.icon} alt="" width={20} height={20} className="size-5 object-contain" />
                   </span>
                   <span className="font-semibold whitespace-nowrap">{tool.name}</span>
