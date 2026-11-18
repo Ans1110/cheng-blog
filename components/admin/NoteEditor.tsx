@@ -5,7 +5,7 @@ import { Note } from "@/types/note";
 import { mdUpload } from "@/utils/mdUpload";
 import { createNoteSchema } from "@/utils/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, FileText, Loader2, Paperclip, Save, Upload, X } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -20,6 +20,10 @@ import MarkdownRenderer from "../markdown/MarkDownRenderer";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
+import { toast } from "sonner";
+import { pdfFileName, pdfProxyUrl } from "@/utils/pdf";
+
+const PDF_MAX_SIZE = 10 * 1024 * 1024;
 
 type NoteFormData = z.input<typeof createNoteSchema>;
 
@@ -52,6 +56,8 @@ export const NoteEditor = ({
 }: NoteEditorProps) => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
   const [tags, setTags] = useState<string[]>(note?.tags || []);
   const [tagInput, setTagInput] = useState("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -65,6 +71,7 @@ export const NoteEditor = ({
       content: note?.content || "",
       category: note?.category || "",
       tags: note?.tags || [],
+      pdfUrl: note?.pdfUrl ?? null,
     },
   });
 
@@ -78,6 +85,7 @@ export const NoteEditor = ({
   const title = watch("title");
   const contenet = watch("content");
   const selectedCategory = watch("category");
+  const pdfUrl = watch("pdfUrl");
 
   const generateSlug = () => {
     const slug = title
@@ -118,6 +126,29 @@ export const NoteEditor = ({
     // reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (pdfInputRef.current) pdfInputRef.current.value = "";
+    if (!file) return;
+    if (file.type !== "application/pdf") return toast.error("Choose a PDF file");
+    if (file.size > PDF_MAX_SIZE) return toast.error("PDF must be under 10MB");
+
+    setUploadingPdf(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const result = await res.json();
+      if (!res.ok || !result.success) throw new Error(result.message || "Upload failed");
+      setValue("pdfUrl", result.data.url, { shouldValidate: true });
+      toast.success("PDF attached");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploadingPdf(false);
     }
   };
 
@@ -172,7 +203,28 @@ export const NoteEditor = ({
                   <TabsTrigger value="write">Write</TabsTrigger>
                   <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
-                <div>
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={pdfInputRef}
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    hidden
+                    onChange={handlePdfUpload}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={uploadingPdf}
+                    onClick={() => pdfInputRef.current?.click()}
+                  >
+                    {uploadingPdf ? (
+                      <Loader2 className="size-4 mr-2 animate-spin" />
+                    ) : (
+                      <Paperclip className="size-4 mr-2" />
+                    )}
+                    {pdfUrl ? "Replace PDF" : "Attach PDF"}
+                  </Button>
                   <ControlledInput
                     name="file"
                     type="file"
@@ -192,10 +244,32 @@ export const NoteEditor = ({
                   </Button>
                 </div>
               </div>
+              {pdfUrl && (
+                <div className="flex items-center gap-3 rounded-lg border bg-muted/40 px-3 py-2 text-sm">
+                  <FileText className="size-4 shrink-0 text-muted-foreground" />
+                  <a
+                    href={pdfProxyUrl(pdfUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="min-w-0 flex-1 truncate hover:underline"
+                  >
+                    {pdfFileName(pdfUrl)}
+                  </a>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Remove PDF"
+                    onClick={() => setValue("pdfUrl", null, { shouldValidate: true })}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+              )}
               <TabsContent value="write" className="space-y-2">
                 <ControlledTextarea
                   name="content"
-                  label="Content *"
+                  label={pdfUrl ? "Content (optional with a PDF)" : "Content *"}
                   placeholder="Write your note content here..."
                   className="h-[500px] font-mono"
                 />

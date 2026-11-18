@@ -41,9 +41,13 @@ export const createNoteSchema = z.object({
     .max(255)
     .regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens"),
   title: z.string().min(1, "Title is required").max(255),
-  content: z.string().min(1, "Content is required"),
+  content: z.string(),
   category: z.string().min(1, "Category is required").max(100),
   tags: z.array(z.string()).default([]),
+  pdfUrl: z.string().url().max(500).nullable().optional(),
+}).refine((d) => d.content.trim().length > 0 || !!d.pdfUrl, {
+  message: "Write some content or attach a PDF",
+  path: ["content"],
 });
 
 export const updateNoteSchema = z.object({
@@ -54,9 +58,10 @@ export const updateNoteSchema = z.object({
     .regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens")
     .optional(),
   title: z.string().min(1).max(255).optional(),
-  content: z.string().min(1).optional(),
+  content: z.string().optional(),
   category: z.string().min(1).max(100).optional(),
   tags: z.array(z.string()).optional(),
+  pdfUrl: z.string().url().max(500).nullable().optional(),
 });
 
 export const createNoteCategorySchema = z.object({

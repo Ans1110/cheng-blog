@@ -28,9 +28,11 @@ interface ArticleShellProps {
   lede?: string | null;
   tags?: string[] | null;
   content: string;
+  /** Rendered above the prose card, e.g. an attached PDF. */
+  attachment?: ReactNode;
 }
 
-export function ArticleShell({ backHref, backLabel, title, meta, lede, tags, content }: ArticleShellProps) {
+export function ArticleShell({ backHref, backLabel, title, meta, lede, tags, content, attachment }: ArticleShellProps) {
   return (
     <article className="container pt-8 pb-16 md:pb-24">
       <div className="max-w-3xl mx-auto">
@@ -66,16 +68,29 @@ export function ArticleShell({ backHref, backLabel, title, meta, lede, tags, con
           )}
         </motion.header>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="glass rounded-3xl px-5 py-8 sm:px-8 md:px-12 md:py-12"
-        >
-          <div className={proseClasses}>
-            <MarkdownRenderer content={content} />
-          </div>
-        </motion.div>
+        {attachment && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className={content.trim() ? "mb-8" : undefined}
+          >
+            {attachment}
+          </motion.div>
+        )}
+
+        {content.trim() && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: attachment ? 0.4 : 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="glass rounded-3xl px-5 py-8 sm:px-8 md:px-12 md:py-12"
+          >
+            <div className={proseClasses}>
+              <MarkdownRenderer content={content} />
+            </div>
+          </motion.div>
+        )}
 
         <div className="mt-12 text-center">
           <span aria-hidden className="text-[var(--glow)] tracking-[1em] animate-twinkle inline-block">

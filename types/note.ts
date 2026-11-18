@@ -5,6 +5,7 @@ export interface Note {
   content: string;
   category: string;
   tags: string[];
+  pdfUrl: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,6 +16,7 @@ export interface CreateNote {
   content: string;
   category: string;
   tags?: string[];
+  pdfUrl?: string | null;
 }
 
 export interface UpdateNote {
@@ -23,4 +25,5 @@ export interface UpdateNote {
   content?: string;
   category?: string;
   tags?: string[];
+  pdfUrl?: string | null;
 }

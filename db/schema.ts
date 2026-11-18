@@ -41,6 +41,7 @@ export const notes = mysqlTable(
     content: text("content").notNull(),
     category: varchar("category", { length: 100 }).notNull(),
     tags: json("tags").$type<string[]>().default([]),
+    pdfUrl: varchar("pdf_url", { length: 500 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

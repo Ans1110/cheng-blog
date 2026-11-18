@@ -131,7 +131,7 @@ notes.post("/", authMiddleware, mutationRateLimiter, async (c) => {
       );
     }
 
-    const { slug, title, content, category, tags } = parsed.data;
+    const { slug, title, content, category, tags, pdfUrl } = parsed.data;
 
     const existingNote = await db
       .select()
@@ -155,6 +155,7 @@ notes.post("/", authMiddleware, mutationRateLimiter, async (c) => {
       content,
       category,
       tags: tags || [],
+      pdfUrl: pdfUrl ?? null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import { PageHeader, SearchField, TagChip } from "../dream/PageParts";
 import { trackSpotlight } from "../dream/spotlight";
-import { ArrowLeft, ArrowUpRight, X } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -249,6 +249,11 @@ function NoteRow({ note }: { note: Note }) {
         </time>
         <h3 className="flex-1 min-w-0 font-semibold text-lg leading-snug group-hover:text-[var(--glow)] transition-colors">
           {note.title}
+          {note.pdfUrl && (
+            <span className="ml-2 inline-flex translate-y-[-2px] items-center gap-1 rounded-full border border-[var(--glass-border)] px-2 py-0.5 align-middle text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              <FileText className="size-3" /> PDF
+            </span>
+          )}
         </h3>
         {note.tags && note.tags.length > 0 && (
           <div className="hidden md:flex gap-1.5 shrink-0">

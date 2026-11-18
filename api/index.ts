@@ -13,6 +13,7 @@ import interests from "./interests";
 import daily from "./daily";
 import films from "./films";
 import board from "./board";
+import files from "./files";
 
 const app = new Hono().basePath("/api");
 
@@ -67,6 +68,7 @@ app.route("/interests", interests);
 app.route("/daily", daily);
 app.route("/films", films);
 app.route("/board", board);
+app.route("/files", files);
 
 app.get("/health", (c) =>
   c.json({ success: true, message: "API is running" }, 200)

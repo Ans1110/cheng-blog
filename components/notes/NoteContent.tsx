@@ -4,6 +4,7 @@ import { NoteCategory } from "@/types/category";
 import { Note } from "@/types/note";
 import { format } from "date-fns";
 import { ArticleShell } from "../dream/ArticleShell";
+import { PdfViewer } from "./PdfViewer";
 
 interface NoteContentProps {
   note: Note;
@@ -26,6 +27,7 @@ export const NoteContent = ({ note, category }: NoteContentProps) => {
       }
       tags={note.tags}
       content={note.content}
+      attachment={note.pdfUrl ? <PdfViewer key={note.pdfUrl} url={note.pdfUrl} title={note.title} /> : undefined}
     />
   );
 };
