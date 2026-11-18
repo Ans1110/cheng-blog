@@ -5,16 +5,24 @@ import Link from "next/link";
 import { useRef } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { MaskImage } from "../dream/MaskImage";
+import { HaloOrbit } from "./HaloOrbit";
 
 const TITLE = "Cheng";
 
 export const HeroSection = () => {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
 
   // Scrolling away dissolves the hero like waking up
   const titleY = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const titleBlur = useTransform(scrollYProgress, [0.25, 0.9], ["blur(0px)", "blur(12px)"]);
+  const titleBlur = useTransform(
+    scrollYProgress,
+    [0.25, 0.9],
+    ["blur(0px)", "blur(12px)"],
+  );
   const fade = useTransform(scrollYProgress, [0.15, 0.8], [1, 0]);
   const wingsY = useTransform(scrollYProgress, [0, 1], [0, -90]);
   const haloScale = useTransform(scrollYProgress, [0, 1], [1, 1.5]);
@@ -30,8 +38,9 @@ export const HeroSection = () => {
         style={{ scale: haloScale, opacity: fade }}
         className="absolute size-[min(80vw,560px)] rounded-full"
       >
-        <div className="absolute inset-0 rounded-full animate-halo opacity-70 blur-2xl bg-[conic-gradient(from_0deg,var(--dream-pink),var(--dream-lilac),var(--dream-blue),var(--dream-mint),var(--dream-butter),var(--dream-pink))]" />
-        <div className="absolute inset-[12%] rounded-full bg-background/80 blur-xl" />
+        <div className="absolute inset-0 rounded-full animate-halo opacity-70 blur-xl bg-[conic-gradient(from_0deg,var(--dream-pink),var(--dream-lilac),var(--dream-blue),var(--dream-mint),var(--dream-butter),var(--dream-pink))]" />
+        <div className="absolute inset-[8%] rounded-full bg-background/80 blur-lg" />
+        <HaloOrbit />
       </motion.div>
 
       {/* Floating pixel wings */}
@@ -41,10 +50,16 @@ export const HeroSection = () => {
         className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-[4vw] md:px-[10vw] pointer-events-none"
       >
         <div className="animate-float">
-          <MaskImage src="/left_wing.svg" className="w-16 h-28 md:w-28 md:h-48 lg:w-32 lg:h-56 opacity-80" />
+          <MaskImage
+            src="/left_wing.svg"
+            className="w-16 h-28 md:w-28 md:h-48 lg:w-32 lg:h-56 opacity-80"
+          />
         </div>
         <div className="animate-float [animation-delay:-3.5s]">
-          <MaskImage src="/right_wing.svg" className="w-16 h-28 md:w-28 md:h-48 lg:w-32 lg:h-56 opacity-80" />
+          <MaskImage
+            src="/right_wing.svg"
+            className="w-16 h-28 md:w-28 md:h-48 lg:w-32 lg:h-56 opacity-80"
+          />
         </div>
       </motion.div>
 
@@ -71,7 +86,11 @@ export const HeroSection = () => {
               aria-hidden
               initial={{ opacity: 0, y: 40, filter: "blur(16px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{ delay: 0.25 + i * 0.09, duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                delay: 0.25 + i * 0.09,
+                duration: 1.1,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="inline-block text-dream pr-[0.04em]"
             >
               {ch}
@@ -85,7 +104,7 @@ export const HeroSection = () => {
           transition={{ delay: 0.9, duration: 0.8 }}
           className="mt-6 text-base md:text-lg text-muted-foreground max-w-md mx-auto"
         >
-          Notes on code and the things I&rsquo;m learning.
+          The things I love, and what I&rsquo;m learning.
         </motion.p>
 
         <motion.div
@@ -99,10 +118,10 @@ export const HeroSection = () => {
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </Link>
           <Link
-            href="/notes"
+            href="/record"
             className="glass rounded-full px-6 py-3 font-semibold hover:-translate-y-0.5 transition-transform"
           >
-            Browse notes
+            My Life
           </Link>
         </motion.div>
       </motion.div>
@@ -113,7 +132,10 @@ export const HeroSection = () => {
         style={{ opacity: fade }}
         className="absolute bottom-6 left-1/2 -translate-x-1/2 text-muted-foreground"
       >
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        >
           <ChevronDown className="size-5" />
         </motion.div>
       </motion.div>

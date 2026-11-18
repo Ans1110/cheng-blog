@@ -557,3 +557,208 @@ html {
   color: rgba(255,255,255,0.88);
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
+
+/* Hero halo companion: butterfly on the top arc, star on the bottom */
+:root {
+  --orbit-ink: oklch(0.55 0.13 292);
+  --orbit-glow: oklch(0.7 0.14 300 / 0.75);
+}
+.dark {
+  --orbit-ink: oklch(0.98 0.01 280);
+  --orbit-glow: oklch(0.85 0.08 280 / 0.85);
+}
+.halo-butterfly {
+  overflow: visible;
+  filter: drop-shadow(0 0 2px rgb(255 255 255 / 0.7)) drop-shadow(0 0 10px var(--orbit-glow));
+}
+.halo-wing {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  animation: halo-flap 0.45s ease-in-out infinite alternate;
+}
+/* Wings are drawn on the left and mirrored with scale(-1 1); the CSS flap
+   replaces that transform, so each side flaps around its own mirror. */
+.halo-wing[transform="scale(1 1)"] {
+  animation-name: halo-flap-right;
+}
+@keyframes halo-flap {
+  from {
+    transform: scale(-1, 1);
+  }
+  to {
+    transform: scale(-0.65, 1);
+  }
+}
+@keyframes halo-flap-right {
+  from {
+    transform: scale(1, 1);
+  }
+  to {
+    transform: scale(0.65, 1);
+  }
+}
+.crystal-edge {
+  stroke: #fff;
+  stroke-width: 0.55;
+  stroke-linejoin: round;
+  stroke-opacity: 0.9;
+}
+.crystal-facet {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 0.3;
+  stroke-opacity: 0.45;
+  stroke-linecap: round;
+}
+.crystal-flare {
+  animation: crystal-glint 2.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes crystal-glint {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+.halo-star {
+  overflow: visible;
+  filter: drop-shadow(0 0 3px var(--orbit-glow)) drop-shadow(0 0 10px var(--orbit-glow));
+}
+.chalk-line {
+  fill: none;
+  stroke: var(--orbit-ink);
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Star twinkle: the doodle breathes, the scribble flickers, shine dashes flash in turn */
+.star-rays,
+.star-scribble {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+.star-rays {
+  animation: star-breathe 2.4s ease-in-out infinite;
+}
+.star-scribble {
+  animation: star-flicker 0.9s ease-in-out infinite alternate;
+}
+.star-cross {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: star-blink 1.8s ease-in-out infinite;
+}
+@keyframes star-breathe {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(0.94) rotate(-3deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06) rotate(3deg);
+  }
+}
+@keyframes star-flicker {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes star-blink {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+}
+
+/* Star trail over the top of the halo */
+.halo-trail {
+  overflow: visible;
+}
+.trail-base {
+  fill: none;
+  stroke: var(--orbit-ink);
+  stroke-width: 0.22;
+  stroke-linecap: round;
+  stroke-dasharray: 0.01 1.4;
+  opacity: 0.35;
+}
+.trail-tail {
+  fill: none;
+  stroke: var(--orbit-ink);
+  stroke-linecap: round;
+}
+.trail-tail-glow {
+  stroke: var(--orbit-glow);
+  filter: blur(0.6px);
+}
+.trail-dust {
+  fill: #fff;
+  filter: drop-shadow(0 0 1.5px var(--orbit-glow));
+}
+.trail-flare {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.3s ease-out;
+}
+.trail-star {
+  fill: #fff;
+  transform-box: fill-box;
+  transform-origin: center;
+  filter: drop-shadow(0 0 1px var(--orbit-glow));
+  animation: trail-twinkle 2.6s ease-in-out infinite;
+}
+.trail-star-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: trail-halo 2.6s ease-in-out infinite;
+}
+@keyframes trail-twinkle {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(0.55) rotate(-6deg);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.1) rotate(4deg);
+  }
+}
+@keyframes trail-halo {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trail-star,
+  .trail-star-halo,
+  .halo-wing,
+  .crystal-flare,
+  .star-rays,
+  .star-scribble,
+  .star-cross {
+    animation: none;
+  }
+}
