@@ -43,11 +43,11 @@ export const HeroSection = () => {
         <HaloOrbit />
       </motion.div>
 
-      {/* Floating pixel wings */}
+      {/* Floating pixel wings (md+; on phones they sit beside the title instead) */}
       <motion.div
         aria-hidden
         style={{ y: wingsY, opacity: fade }}
-        className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-[4vw] md:px-[10vw] pointer-events-none"
+        className="absolute inset-x-0 top-1/2 -translate-y-1/2 hidden md:flex justify-between px-[10vw] pointer-events-none"
       >
         <div className="animate-float">
           <MaskImage
@@ -80,6 +80,21 @@ export const HeroSection = () => {
           aria-label={TITLE}
           className="font-display italic leading-[0.85] text-[clamp(5rem,20vw,13rem)] tracking-tight"
         >
+          <span className="relative inline-block">
+          {/* Phones: wings hug the word, centred on it, so they don't drift
+              down beside the subtitle when the hero stacks tall. */}
+          <span
+            aria-hidden
+            className="md:hidden absolute right-full top-1/2 -translate-y-1/2 mr-[0.06em] pointer-events-none"
+          >
+            <MaskImage src="/left_wing.svg" className="w-[0.55em] h-[0.95em] opacity-80 animate-float" />
+          </span>
+          <span
+            aria-hidden
+            className="md:hidden absolute left-full top-1/2 -translate-y-1/2 ml-[0.06em] pointer-events-none"
+          >
+            <MaskImage src="/right_wing.svg" className="w-[0.55em] h-[0.95em] opacity-80 animate-float [animation-delay:-3.5s]" />
+          </span>
           {TITLE.split("").map((ch, i) => (
             <motion.span
               key={i}
@@ -96,6 +111,7 @@ export const HeroSection = () => {
               {ch}
             </motion.span>
           ))}
+          </span>
         </h1>
 
         <motion.p
