@@ -1,6 +1,6 @@
 "use client";
 
-import { Github, Mail } from "lucide-react";
+import { Github, Instagram, Mail } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MaskImage } from "../dream/MaskImage";
@@ -12,6 +12,7 @@ const quickLinks = [
 ];
 
 const socialLinks = [
+  { href: "https://www.instagram.com/pizza.__11.10/", label: "Instagram", icon: Instagram },
   { href: "https://github.com/Ans1110", label: "GitHub", icon: Github },
   { href: "mailto:bo99645bo@gmail.com", label: "Email", icon: Mail },
 ];

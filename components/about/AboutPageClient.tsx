@@ -31,10 +31,9 @@ const stagger: Variants = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-// TODO: replace with your real Instagram profile URL
 const links = [
   {
-    href: "https://www.instagram.com/your_handle",
+    href: "https://www.instagram.com/pizza.__11.10/",
     label: "Instagram",
     icon: Instagram,
     external: true,
