@@ -1,0 +1,67 @@
+# Production stack on the VPS. CI copies this file and the Caddyfile to
+# /opt/cheng-blog on every deploy; secrets live in /opt/cheng-blog/.env.
+name: cheng-blog
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # One-off: applies db/schema.ts (drizzle-kit push). Run by the deploy script.
+  migrate:
+    image: ${IMAGE:-ghcr.io/ans1110/cheng-blog}-migrate:${IMAGE_TAG:-latest}
+    profiles: ["migrate"]
+    env_file: .env
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_PORT: "3306"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  app:
+    image: ${IMAGE:-ghcr.io/ans1110/cheng-blog}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_PORT: "3306"
+    expose:
+      - "3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # HTTPS (automatic Let's Encrypt) in front of the app.
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - app
+
+volumes:
+  mysql-data:
+  caddy-data:
+  caddy-config:
