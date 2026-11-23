@@ -3,7 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { mutationRateLimiter } from "./middleware/rateLimiter";
 import { authMiddleware } from "./middleware/auth";
-import { createNoteSchema, updateNoteSchema } from "@/utils/validation";
+import { createNoteSchema, updateNoteSchema, createdAtSchema } from "@/utils/validation";
 
 const notes = new Hono();
 
@@ -131,6 +131,11 @@ notes.post("/", authMiddleware, mutationRateLimiter, async (c) => {
       );
     }
 
+    const when = createdAtSchema.safeParse(body);
+    if (!when.success) {
+      return c.json({ success: false, error: when.error.issues[0]?.message || "Invalid upload time" }, 400);
+    }
+
     const { slug, title, content, category, tags, pdfUrl } = parsed.data;
 
     const existingNote = await db
@@ -156,7 +161,7 @@ notes.post("/", authMiddleware, mutationRateLimiter, async (c) => {
       category,
       tags: tags || [],
       pdfUrl: pdfUrl ?? null,
-      createdAt: new Date(),
+      createdAt: when.data.createdAt ?? new Date(),
       updatedAt: new Date(),
     });
 
@@ -208,8 +213,14 @@ notes.put("/:id", authMiddleware, mutationRateLimiter, async (c) => {
       );
     }
 
+    const when = createdAtSchema.safeParse(body);
+    if (!when.success) {
+      return c.json({ success: false, error: when.error.issues[0]?.message || "Invalid upload time" }, 400);
+    }
+
     const updateData = {
       ...parsed.data,
+      ...(when.data.createdAt && { createdAt: when.data.createdAt }),
       updatedAt: new Date(),
     };
 

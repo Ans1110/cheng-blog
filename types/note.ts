@@ -17,6 +17,8 @@ export interface CreateNote {
   category: string;
   tags?: string[];
   pdfUrl?: string | null;
+  /** ISO time; only sent when changed by hand in admin. */
+  createdAt?: string;
 }
 
 export interface UpdateNote {
@@ -26,4 +28,6 @@ export interface UpdateNote {
   category?: string;
   tags?: string[];
   pdfUrl?: string | null;
+  /** ISO time; only sent when changed by hand in admin. */
+  createdAt?: string;
 }

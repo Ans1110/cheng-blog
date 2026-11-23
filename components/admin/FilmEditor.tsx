@@ -5,6 +5,8 @@ import { StarRating } from "@/components/record/film/StarRating";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { FilmKind, FilmReview } from "@/types/film";
 import {
@@ -22,8 +24,6 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_SIZE = 5 * 1024 * 1024;
 const RATINGS = Array.from({ length: 11 }, (_, i) => i / 2); // 0, 0.5 … 5
 
-const selectClass =
-  "border-input bg-transparent dark:bg-input/30 h-9 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]";
 
 interface FilmEditorProps {
   film?: FilmReview;
@@ -164,13 +164,18 @@ export default function FilmEditor({ film, onSave }: FilmEditorProps) {
         <div className="grid gap-4 sm:grid-cols-4">
           <div className="space-y-2">
             <Label htmlFor="film-kind">Type</Label>
-            <select id="film-kind" value={kind} onChange={(e) => setKind(e.target.value as FilmKind)} className={selectClass}>
-              {filmKinds.map((k) => (
-                <option key={k} value={k}>
-                  {kindLabel[k]}
-                </option>
-              ))}
-            </select>
+            <Select value={kind} onValueChange={(v) => setKind(v as FilmKind)}>
+              <SelectTrigger id="film-kind" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {filmKinds.map((k) => (
+                  <SelectItem key={k} value={k}>
+                    {kindLabel[k]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="film-year">Release year</Label>
@@ -178,41 +183,44 @@ export default function FilmEditor({ film, onSave }: FilmEditorProps) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="film-watched">Watched on</Label>
-            <Input id="film-watched" type="date" value={watchedAt} onChange={(e) => setWatchedAt(e.target.value)} />
+            <DatePicker id="film-watched" value={watchedAt} onChange={setWatchedAt} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="film-rating">Rating</Label>
-            <select
-              id="film-rating"
-              value={rating}
-              onChange={(e) => setRating(Number(e.target.value))}
-              className={selectClass}
-            >
-              {RATINGS.map((r) => (
-                <option key={r} value={r}>
-                  {r.toFixed(1)}
-                </option>
-              ))}
-            </select>
+            <Select value={String(rating)} onValueChange={(v) => setRating(Number(v))}>
+              <SelectTrigger id="film-rating" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {RATINGS.map((r) => (
+                  <SelectItem key={r} value={String(r)}>
+                    {r.toFixed(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <StarRating value={rating} className="text-amber-400" />
           </div>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="film-top-rank">Top 5</Label>
-          <select
-            id="film-top-rank"
-            value={topRank ?? ""}
-            onChange={(e) => setTopRank(e.target.value ? Number(e.target.value) : null)}
-            className={`${selectClass} sm:max-w-56`}
+          <Select
+            value={topRank ? String(topRank) : "none"}
+            onValueChange={(v) => setTopRank(v === "none" ? null : Number(v))}
           >
-            <option value="">Not in Top 5</option>
-            {[1, 2, 3, 4, 5].map((r) => (
-              <option key={r} value={r}>
-                #{r}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger id="film-top-rank" className="w-full sm:max-w-56">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Not in Top 5</SelectItem>
+              {[1, 2, 3, 4, 5].map((r) => (
+                <SelectItem key={r} value={String(r)}>
+                  #{r}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <p className="text-sm text-muted-foreground">
             Picking a rank that&rsquo;s taken moves the other film out of the Top 5.
           </p>

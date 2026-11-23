@@ -34,6 +34,11 @@ export const updatePostSchema = z.object({
   published: z.boolean().optional(),
 });
 
+/** Optional publish time for posts and notes, set by hand in admin. */
+export const createdAtSchema = z.object({
+  createdAt: z.coerce.date({ error: "Invalid upload time" }).optional(),
+});
+
 export const createNoteSchema = z.object({
   slug: z
     .string()

@@ -1,5 +1,5 @@
 import { db, schema } from "@/db";
-import { createPostSchema, updatePostSchema } from "@/utils/validation";
+import { createPostSchema, updatePostSchema, createdAtSchema } from "@/utils/validation";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { mutationRateLimiter } from "./middleware/rateLimiter";
@@ -105,6 +105,11 @@ posts.post("/", authMiddleware, mutationRateLimiter, async (c) => {
       );
     }
 
+    const when = createdAtSchema.safeParse(body);
+    if (!when.success) {
+      return c.json({ success: false, message: when.error.issues[0]?.message || "Invalid upload time" }, 400);
+    }
+
     const { slug, title, content, excerpt, tags, published } = parsed.data;
 
     const existingPost = await db
@@ -130,7 +135,7 @@ posts.post("/", authMiddleware, mutationRateLimiter, async (c) => {
       excerpt: excerpt || null,
       tags: tags || [],
       published: published || false,
-      createdAt: new Date(),
+      createdAt: when.data.createdAt ?? new Date(),
       updatedAt: new Date(),
     });
 
@@ -181,8 +186,14 @@ posts.put("/:id", authMiddleware, mutationRateLimiter, async (c) => {
       );
     }
 
+    const when = createdAtSchema.safeParse(body);
+    if (!when.success) {
+      return c.json({ success: false, message: when.error.issues[0]?.message || "Invalid upload time" }, 400);
+    }
+
     const updateData = {
       ...parsed.data,
+      ...(when.data.createdAt && { createdAt: when.data.createdAt }),
       updatedAt: new Date(),
     };
 

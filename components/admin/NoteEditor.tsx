@@ -20,6 +20,7 @@ import MarkdownRenderer from "../markdown/MarkDownRenderer";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
+import { CreatedAtField, toLocalInput } from "./CreatedAtField";
 import { toast } from "sonner";
 import { pdfFileName, pdfProxyUrl } from "@/utils/pdf";
 
@@ -45,7 +46,7 @@ const getIconComponent = (iconName: string | null | undefined) => {
 
 interface NoteEditorProps {
   note?: Note;
-  onSave: (data: NoteFormData) => Promise<void>;
+  onSave: (data: NoteFormData & { createdAt?: string }) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -61,6 +62,8 @@ export const NoteEditor = ({
   const [tags, setTags] = useState<string[]>(note?.tags || []);
   const [tagInput, setTagInput] = useState("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const initialCreatedAt = toLocalInput(note?.createdAt);
+  const [createdAt, setCreatedAt] = useState(initialCreatedAt);
   const { data: categories, isLoading: isCategoriesLoading } = useCategories();
 
   const form = useForm<NoteFormData>({
@@ -155,7 +158,14 @@ export const NoteEditor = ({
   const onSubmit = async (data: NoteFormData) => {
     setIsSaving(true);
     try {
-      await onSave({ ...data, tags });
+      await onSave({
+        ...data,
+        tags,
+        // Only send a time the admin actually changed (inputs drop the seconds).
+        ...(createdAt && createdAt !== initialCreatedAt && {
+          createdAt: new Date(createdAt).toISOString(),
+        }),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -313,6 +323,8 @@ export const NoteEditor = ({
                     Generate
                   </Button>
                 </div>
+
+                <CreatedAtField value={createdAt} onChange={setCreatedAt} isNew={!note} />
 
                 {/* Category */}
                 <div className="space-y-2">
