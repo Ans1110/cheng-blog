@@ -67,7 +67,7 @@ jobs:
     name: Deploy to VPS
     needs: build
     runs-on: ubuntu-latest
-    environment: production
+    environment: pizza-cheng
     permissions:
       contents: read
       packages: read

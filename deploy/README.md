@@ -57,7 +57,7 @@ ssh-copy-id -i cheng-blog-deploy.pub <user>@<vps-ip>
 
 ### 5. GitHub settings
 
-**Settings → Environments → New environment →** `production`, then add secrets:
+**Settings → Environments → New environment →** `pizza-cheng`, then add secrets:
 
 | Secret        | Value                                    |
 |---------------|------------------------------------------|
