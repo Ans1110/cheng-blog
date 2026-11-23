@@ -1,3 +1,3 @@
 # Cheng Blog
 
-My personal blog: https://cheng-blog.up.railway.app/
+[My personal blog](https://pizza-cheng.com/)
