@@ -86,7 +86,8 @@ export function TagChip({
       className={cn(
         "relative inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all hover:-translate-y-0.5",
         active
-          ? "text-[var(--on-dream)] bg-[linear-gradient(110deg,var(--dream-pink),var(--dream-lilac),var(--dream-blue))] shadow-[0_6px_20px_-6px_var(--dream-lilac)]"
+          ? // Light mode: solid lilac; dark mode keeps the dream gradient.
+            "text-[var(--on-dream)] bg-[color:var(--dream-lilac)] dark:bg-[linear-gradient(110deg,var(--dream-pink),var(--dream-lilac),var(--dream-blue))] shadow-[0_6px_20px_-6px_var(--dream-lilac)]"
           : "pill hover:border-[var(--dream-pink)]",
       )}
     >

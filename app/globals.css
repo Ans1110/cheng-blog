@@ -393,6 +393,15 @@
     box-shadow: 0 16px 50px -10px var(--dream-pink),
       inset 0 1px 0 oklch(1 0 0 / 0.5);
   }
+  /* Light mode: one solid lilac instead of the shifting gradient */
+  :root:not(.dark) .btn-dream {
+    background: var(--dream-lilac);
+  }
+  :root:not(.dark) .btn-dream:hover {
+    background: color-mix(in oklch, var(--dream-lilac) 88%, black);
+    box-shadow: 0 16px 50px -10px var(--dream-lilac),
+      inset 0 1px 0 oklch(1 0 0 / 0.5);
+  }
 
   /* Edge fade for marquees */
   .fade-x {
@@ -562,10 +571,13 @@ html {
 :root {
   --orbit-ink: oklch(0.55 0.13 292);
   --orbit-glow: oklch(0.7 0.14 300 / 0.75);
+  /* Butterfly's comet tail: a lighter tint of the ink on the pale sky */
+  --orbit-tail: oklch(0.72 0.1 292);
 }
 .dark {
   --orbit-ink: oklch(0.98 0.01 280);
   --orbit-glow: oklch(0.85 0.08 280 / 0.85);
+  --orbit-tail: var(--orbit-ink);
 }
 .halo-butterfly {
   overflow: visible;
@@ -700,7 +712,7 @@ html {
 }
 .trail-tail {
   fill: none;
-  stroke: var(--orbit-ink);
+  stroke: var(--orbit-tail);
   stroke-linecap: round;
 }
 .trail-tail-glow {
