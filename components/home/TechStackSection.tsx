@@ -14,6 +14,7 @@ const toolkit: Group[] = [
       { name: "JavaScript", icon: "/javascript.svg" },
       { name: "Go", icon: "/go.svg" },
       { name: "Python", icon: "/python.svg" },
+      { name: "Java", icon: "/Java.svg" },
     ],
   },
   {
@@ -25,6 +26,7 @@ const toolkit: Group[] = [
       { name: "Hono", icon: "/hono.svg" },
       { name: "Gin", icon: "/gin.svg" },
       { name: "FastAPI", icon: "/FastAPI.svg" },
+      { name: "Spring Boot", icon: "/Spring.svg" },
       { name: "Tailwind CSS", icon: "/tailwindcss.svg" },
     ],
   },
@@ -45,6 +47,7 @@ const toolkit: Group[] = [
     label: "Data & Infrastructure",
     tools: [
       { name: "PostgreSQL", icon: "/postgresql.svg" },
+      { name: "MySQL", icon: "/MySQL.svg" },
       { name: "Drizzle", icon: "/drizzle.svg" },
       { name: "Docker", icon: "/docker.svg" },
       { name: "Linux", icon: "/linux.svg" },
