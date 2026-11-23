@@ -22,8 +22,8 @@ const blocks: Block[] = [
     color: "var(--dream-pink)",
   },
   {
-    href: "/record/kpop/cheering",
-    title: "Cheering Guide",
+    href: "/record/kpop/archive",
+    title: "IVE Archive",
     blurb: "Practice with Stage & MVs",
     at: { left: "73%", top: "70%" },
     // Light blue — the theme blue is too dark against the night background.

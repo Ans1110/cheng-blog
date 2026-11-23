@@ -221,3 +221,70 @@ export type CreateNoteCategoryInput = z.infer<typeof createNoteCategorySchema>;
 export type UpdateNoteCategoryInput = z.infer<typeof updateNoteCategorySchema>;
 export type CreateLearningInput = z.infer<typeof createLearningSchema>;
 export type UpdateLearningInput = z.infer<typeof updateLearningSchema>;
+
+/** Also the order sections appear in on the archive page. */
+export const iveSections = [
+  "mv",
+  "stage",
+  "123ive",
+  "behind",
+  "personal",
+  "live",
+  "variety",
+  "cheering",
+] as const;
+
+/** Sections whose videos are grouped into named collections. */
+export const iveCollectionSections: readonly IveSection[] = ["stage", "behind", "123ive", "personal", "live"];
+
+export type IveSection = (typeof iveSections)[number];
+
+const iveCollection = z.string().trim().max(100).optional().nullable();
+
+export const iveHasRequiredCollection = (v: { section?: IveSection; collection?: string | null }) =>
+  !v.section || !iveCollectionSections.includes(v.section) || !!v.collection?.trim();
+
+export const iveVideoUrlSchema = z.object({
+  url: z.string().trim().url("Paste a YouTube or Bilibili link").max(500),
+});
+
+export const createIveVideoSchema = iveVideoUrlSchema
+  .extend({
+    section: z.enum(iveSections),
+    collection: iveCollection,
+    recommended: z.boolean().default(false),
+    /** Filled in by hand when the platform won't share the video's details. */
+    title: z.string().trim().min(1).max(255).optional(),
+    thumbnailUrl: z.string().url("Invalid cover URL").max(500).optional(),
+  })
+  .refine((v) => !v.title === !v.thumbnailUrl, {
+    message: "Add both a title and a cover",
+    path: ["title"],
+  })
+  .refine(iveHasRequiredCollection, {
+    message: "This section needs a collection name",
+    path: ["collection"],
+  });
+
+export const updateIveVideoSchema = z.object({
+  section: z.enum(iveSections).optional(),
+  collection: iveCollection,
+  recommended: z.boolean().optional(),
+});
+
+const percent = z.number().min(0).max(100);
+
+export const iveCoverSchema = z
+  .object({
+    coverUrl: z.string().url("Invalid cover URL").max(500).nullable().optional(),
+    /** Focal point in % — used as CSS object-position. */
+    position: z.object({ x: percent, y: percent }).optional(),
+  })
+  .refine((v) => v.coverUrl !== undefined || v.position !== undefined, {
+    message: "Nothing to update",
+  });
+
+export type IveCoverInput = z.infer<typeof iveCoverSchema>;
+
+export type CreateIveVideoInput = z.input<typeof createIveVideoSchema>;
+export type UpdateIveVideoInput = z.infer<typeof updateIveVideoSchema>;

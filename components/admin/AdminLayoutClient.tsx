@@ -16,6 +16,7 @@ import {
   LogOut,
   MessagesSquare,
   Tags,
+  Video,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -33,6 +34,7 @@ const sidebarLinks = [
   { href: "/admin/daily", label: "Daily", icon: Camera },
   { href: "/admin/films", label: "Film Reviews", icon: Clapperboard },
   { href: "/admin/board", label: "Message Board", icon: MessagesSquare },
+  { href: "/admin/ive", label: "IVE Archive", icon: Video },
   { href: "/admin/interests", label: "Interests", icon: Heart },
 ];
 
