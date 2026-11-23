@@ -15,7 +15,6 @@ import {
   Loader2,
   LogOut,
   MessagesSquare,
-  Tags,
   Video,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -28,7 +27,6 @@ const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/posts", label: "Posts", icon: FileText },
   { href: "/admin/notes", label: "Notes", icon: BookOpen },
-  { href: "/admin/categories", label: "Categories", icon: Tags },
   { href: "/admin/projects", label: "Projects", icon: Folder },
   { href: "/admin/learning", label: "Learning", icon: Brain },
   { href: "/admin/daily", label: "Daily", icon: Camera },

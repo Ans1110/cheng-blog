@@ -11,7 +11,7 @@ export default function NewCategoryPage() {
 
   const handleSave = async (data: CreateNoteCategory) => {
     await createCategory.mutateAsync(data);
-    router.push("/admin/categories");
+    router.push("/admin/notes?tab=categories");
   };
 
   return (

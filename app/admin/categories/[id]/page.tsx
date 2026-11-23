@@ -18,7 +18,7 @@ export default function EditCategoryPage() {
       id,
       data,
     });
-    router.push("/admin/categories");
+    router.push("/admin/notes?tab=categories");
   };
 
   if (isLoading) {
