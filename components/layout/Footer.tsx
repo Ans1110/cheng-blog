@@ -1,17 +1,18 @@
 "use client";
 
-import { Github, Mail } from "lucide-react";
-import Image from "next/image";
+import { Github, Instagram, Mail } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { MaskImage } from "../dream/MaskImage";
 
 const quickLinks = [
-  { href: "/", label: "Home" },
   { href: "/posts", label: "Posts" },
   { href: "/notes", label: "Notes" },
+  { href: "/about", label: "About" },
 ];
 
 const socialLinks = [
+  { href: "https://www.instagram.com/pizza.__11.10/", label: "Instagram", icon: Instagram },
   { href: "https://github.com/Ans1110", label: "GitHub", icon: Github },
   { href: "mailto:bo99645bo@gmail.com", label: "Email", icon: Mail },
 ];
@@ -29,78 +30,41 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="border-t bg-muted/30">
-      <div className="container px-4 py-12">
-        {/* Mobile: Logo first, then links in row */}
-        {/* Desktop: 3 columns */}
-        <div className="flex flex-col md:grid md:grid-cols-3 gap-8">
-          {/* Logo/Brand - First on mobile, center on desktop */}
-          <div className="flex flex-col items-center order-first md:order-0 md:col-start-2">
-            <Link href="/" className="inline-block" onClick={handleLogoClick}>
-              <Image
-                src="/logo_gold.svg"
-                alt="Logo"
-                width={60}
-                height={60}
-                className="w-25 h-16"
-              />
+    <footer className="relative mt-16">
+      <div className="h-px bg-[linear-gradient(90deg,transparent,var(--dream-lilac),var(--dream-pink),transparent)] opacity-70" />
+      <div className="container py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <Link href="/" onClick={handleLogoClick} aria-label="Cheng's Blog — home">
+          <MaskImage src="/logo_gold.svg" className="w-20 h-12" />
+        </Link>
+
+        <nav className="flex items-center gap-6 text-sm font-semibold">
+          {quickLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {link.label}
             </Link>
-            <p className="text-sm text-muted-foreground mt-2 text-center">
-              Building things, one line at a time
-            </p>
-            <p className="text-sm mt-2">Web Developer</p>
-          </div>
+          ))}
+        </nav>
 
-          {/* Quick Links & Connect - Side by side on mobile */}
-          <div className="flex flex-row justify-between md:contents">
-            {/* Quick Links */}
-            <div className="md:order-first md:col-start-1 md:row-start-1">
-              <h3 className="font-semibold mb-4">Quick Links</h3>
-              <nav className="flex flex-col space-y-2">
-                {quickLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-
-            {/* Social & Contact */}
-            <div className="text-right md:col-start-3 md:row-start-1">
-              <h3 className="font-semibold mb-4">Connect</h3>
-              <div className="flex justify-end space-x-4">
-                {socialLinks.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={social.label}
-                  >
-                    <social.icon className="h-5 w-5" />
-                  </a>
-                ))}
-              </div>
-              <Link
-                href="/about"
-                className="text-muted-foreground hover:text-foreground transition-colors text-sm mt-4 inline-block"
-              >
-                Contact Me
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Copyright */}
-        <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} Cheng. All rights reserved.</p>
+        <div className="flex items-center gap-2">
+          {socialLinks.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={s.label}
+              className="glass size-10 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:-translate-y-0.5 transition-all"
+            >
+              <s.icon className="size-4" />
+            </a>
+          ))}
         </div>
       </div>
+      <p className="eyebrow text-center pb-8">© {currentYear} Cheng</p>
     </footer>
   );
 };

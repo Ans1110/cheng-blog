@@ -1,42 +1,28 @@
 "use client";
 
+import { CategoriesPanel } from "@/components/admin/CategoriesPanel";
+import { NotesPanel } from "@/components/admin/NotesPanel";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCategories } from "@/hooks/useCategories";
-import { useDeleteNote, useNotes } from "@/hooks/useNotes";
-import { format } from "date-fns";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { useNotes } from "@/hooks/useNotes";
+import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function AdminNotesPage() {
-  const { data: notes, isLoading } = useNotes();
+type Tab = "notes" | "categories";
+
+function AdminNotes() {
+  const router = useRouter();
+  const pathname = usePathname();
+  // The tab lives in the URL so category create/edit pages can return to it.
+  const tab: Tab = useSearchParams().get("tab") === "categories" ? "categories" : "notes";
+  const { data: notes } = useNotes();
   const { data: categories } = useCategories();
-  const deleteNote = useDeleteNote();
-  const [deleteId, setDeleteId] = useState<number | null>(null);
 
-  const handleDelete = async () => {
-    if (deleteId) {
-      try {
-        await deleteNote.mutateAsync(deleteId);
-        setDeleteId(null);
-        toast.success("Note deleted successfully");
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to delete note");
-      }
-    }
-  };
+  const setTab = (next: string) =>
+    router.replace(next === "categories" ? `${pathname}?tab=categories` : pathname, { scroll: false });
 
   return (
     <div className="space-y-8">
@@ -45,93 +31,41 @@ export default function AdminNotesPage() {
           <h1 className="text-4xl font-bold bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Notes
           </h1>
-          <p className="text-lg text-muted-foreground">
-            Manage your notes ({categories?.length || 0} categories)
-          </p>
+          <p className="text-lg text-muted-foreground">Manage your notes and their categories</p>
         </div>
-        <Link href="/admin/notes/new">
+        <Link href={tab === "notes" ? "/admin/notes/new" : "/admin/categories/new"}>
           <Button size="lg" className="hover:scale-105 transition-transform">
             <Plus className="mr-2 size-4" />
-            New Note
+            {tab === "notes" ? "New Note" : "New Category"}
           </Button>
         </Link>
       </div>
 
-      {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="size-4 animate-spin" />
-          <p className="mt-4 text-muted-foreground">Loading notes...</p>
-        </div>
-      ) : notes?.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="text-lg text-muted-foreground mb-4">
-            No notes yet. Create your first note!
-          </p>
-          <Link href="/admin/notes/new">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Note
-            </Button>
-          </Link>
-        </div>
-      ) : (
-        <div className="border rounded-lg shadow-sm border-border/50 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Updated</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {notes?.map((note) => (
-                <TableRow key={note.id}>
-                  <TableCell className="font-medium">{note.title}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{note.category}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {format(new Date(note.createdAt), "MMM d, yyyy")}
-                  </TableCell>
-                  <TableCell>
-                    {format(new Date(note.updatedAt), "MMM d, yyyy")}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Link href={`/admin/notes/${note.slug}`}>
-                        <Button variant="ghost" size="icon">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => setDeleteId(note.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
-      <ConfirmDialog
-        open={!!deleteId}
-        onOpenChange={() => setDeleteId(null)}
-        title="Delete Note"
-        description="Are you sure you want to delete this note? This action cannot be undone."
-        onConfirm={handleDelete}
-        confirmText="Delete"
-        variant="destructive"
-      />
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList>
+          <TabsTrigger value="notes">
+            Notes{notes ? ` (${notes.length})` : ""}
+          </TabsTrigger>
+          <TabsTrigger value="categories">
+            Categories{categories ? ` (${categories.length})` : ""}
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="notes" className="mt-6">
+          <NotesPanel />
+        </TabsContent>
+        <TabsContent value="categories" className="mt-6">
+          <CategoriesPanel />
+        </TabsContent>
+      </Tabs>
     </div>
+  );
+}
+
+export default function AdminNotesPage() {
+  // useSearchParams needs a Suspense boundary in a client page.
+  return (
+    <Suspense>
+      <AdminNotes />
+    </Suspense>
   );
 }

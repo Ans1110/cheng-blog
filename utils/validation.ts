@@ -34,6 +34,11 @@ export const updatePostSchema = z.object({
   published: z.boolean().optional(),
 });
 
+/** Optional publish time for posts and notes, set by hand in admin. */
+export const createdAtSchema = z.object({
+  createdAt: z.coerce.date({ error: "Invalid upload time" }).optional(),
+});
+
 export const createNoteSchema = z.object({
   slug: z
     .string()
@@ -41,9 +46,13 @@ export const createNoteSchema = z.object({
     .max(255)
     .regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens"),
   title: z.string().min(1, "Title is required").max(255),
-  content: z.string().min(1, "Content is required"),
+  content: z.string(),
   category: z.string().min(1, "Category is required").max(100),
   tags: z.array(z.string()).default([]),
+  pdfUrl: z.string().url().max(500).nullable().optional(),
+}).refine((d) => d.content.trim().length > 0 || !!d.pdfUrl, {
+  message: "Write some content or attach a PDF",
+  path: ["content"],
 });
 
 export const updateNoteSchema = z.object({
@@ -54,9 +63,10 @@ export const updateNoteSchema = z.object({
     .regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens")
     .optional(),
   title: z.string().min(1).max(255).optional(),
-  content: z.string().min(1).optional(),
+  content: z.string().optional(),
   category: z.string().min(1).max(100).optional(),
   tags: z.array(z.string()).optional(),
+  pdfUrl: z.string().url().max(500).nullable().optional(),
 });
 
 export const createNoteCategorySchema = z.object({
@@ -75,6 +85,58 @@ export const updateNoteCategorySchema = z.object({
   description: z.string().max(500).optional().nullable(),
   icon: z.string().max(100).optional().nullable(),
 });
+
+export const createInterestSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(50),
+});
+
+export const dailyImageSchema = z.object({
+  url: z.string().url("Invalid image URL").max(500),
+  caption: z.string().max(300, "Caption must be 300 characters or less"),
+});
+
+export const createDailyPostSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").max(255),
+  content: z.string().max(100000),
+  images: z.array(dailyImageSchema).min(1, "Add at least one photo").max(20),
+});
+
+export const updateDailyPostSchema = createDailyPostSchema.partial();
+
+export type CreateDailyPostInput = z.infer<typeof createDailyPostSchema>;
+export type UpdateDailyPostInput = z.infer<typeof updateDailyPostSchema>;
+
+export const filmKinds = ["movie", "series", "anime", "documentary"] as const;
+
+export const createFilmReviewSchema = z.object({
+  title: z.string().trim().min(1, "Title is required").max(255),
+  originalTitle: z.string().trim().max(255).optional().nullable(),
+  year: z.number().int().min(1880, "Year looks too early").max(2100, "Year looks too late"),
+  kind: z.enum(filmKinds),
+  rating: z.number().min(0).max(5).multipleOf(0.5, "Rating must be in half-star steps"),
+  genres: z.array(z.string().trim().min(1).max(50)).max(10),
+  posterUrl: z.string().url("Invalid poster URL").max(500).optional().nullable(),
+  verdict: z.string().trim().min(1, "Verdict is required").max(300),
+  review: z.string().max(100000),
+  watchedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Watched date must be YYYY-MM-DD"),
+  topRank: z.number().int().min(1).max(5).optional().nullable(),
+});
+
+export const updateFilmReviewSchema = createFilmReviewSchema.partial();
+
+export type CreateFilmReviewInput = z.infer<typeof createFilmReviewSchema>;
+export type UpdateFilmReviewInput = z.infer<typeof updateFilmReviewSchema>;
+
+export const createBoardMessageSchema = z
+  .object({
+    content: z.string().trim().max(500, "Message must be 500 characters or less"),
+    imageUrl: z.string().url("Invalid image URL").max(500).optional().nullable(),
+  })
+  .refine((m) => m.content.length > 0 || !!m.imageUrl, {
+    message: "Write a message or add a photo",
+  });
+
+export type CreateBoardMessageInput = z.infer<typeof createBoardMessageSchema>;
 
 export const searchSchema = z.object({
   q: z.string().min(1, "Query is required"),
@@ -159,3 +221,70 @@ export type CreateNoteCategoryInput = z.infer<typeof createNoteCategorySchema>;
 export type UpdateNoteCategoryInput = z.infer<typeof updateNoteCategorySchema>;
 export type CreateLearningInput = z.infer<typeof createLearningSchema>;
 export type UpdateLearningInput = z.infer<typeof updateLearningSchema>;
+
+/** Also the order sections appear in on the archive page. */
+export const iveSections = [
+  "mv",
+  "stage",
+  "123ive",
+  "behind",
+  "personal",
+  "live",
+  "variety",
+  "cheering",
+] as const;
+
+/** Sections whose videos are grouped into named collections. */
+export const iveCollectionSections: readonly IveSection[] = ["stage", "behind", "123ive", "personal", "live"];
+
+export type IveSection = (typeof iveSections)[number];
+
+const iveCollection = z.string().trim().max(100).optional().nullable();
+
+export const iveHasRequiredCollection = (v: { section?: IveSection; collection?: string | null }) =>
+  !v.section || !iveCollectionSections.includes(v.section) || !!v.collection?.trim();
+
+export const iveVideoUrlSchema = z.object({
+  url: z.string().trim().url("Paste a YouTube or Bilibili link").max(500),
+});
+
+export const createIveVideoSchema = iveVideoUrlSchema
+  .extend({
+    section: z.enum(iveSections),
+    collection: iveCollection,
+    recommended: z.boolean().default(false),
+    /** Filled in by hand when the platform won't share the video's details. */
+    title: z.string().trim().min(1).max(255).optional(),
+    thumbnailUrl: z.string().url("Invalid cover URL").max(500).optional(),
+  })
+  .refine((v) => !v.title === !v.thumbnailUrl, {
+    message: "Add both a title and a cover",
+    path: ["title"],
+  })
+  .refine(iveHasRequiredCollection, {
+    message: "This section needs a collection name",
+    path: ["collection"],
+  });
+
+export const updateIveVideoSchema = z.object({
+  section: z.enum(iveSections).optional(),
+  collection: iveCollection,
+  recommended: z.boolean().optional(),
+});
+
+const percent = z.number().min(0).max(100);
+
+export const iveCoverSchema = z
+  .object({
+    coverUrl: z.string().url("Invalid cover URL").max(500).nullable().optional(),
+    /** Focal point in % — used as CSS object-position. */
+    position: z.object({ x: percent, y: percent }).optional(),
+  })
+  .refine((v) => v.coverUrl !== undefined || v.position !== undefined, {
+    message: "Nothing to update",
+  });
+
+export type IveCoverInput = z.infer<typeof iveCoverSchema>;
+
+export type CreateIveVideoInput = z.input<typeof createIveVideoSchema>;
+export type UpdateIveVideoInput = z.infer<typeof updateIveVideoSchema>;

@@ -17,6 +17,8 @@ export interface CreatePost {
   excerpt?: string | null;
   tags?: string[];
   published?: boolean;
+  /** ISO time; only sent when changed by hand in admin. */
+  createdAt?: string;
 }
 
 export interface UpdatePost {
@@ -26,4 +28,6 @@ export interface UpdatePost {
   excerpt?: string | null;
   tags?: string[];
   published?: boolean;
+  /** ISO time; only sent when changed by hand in admin. */
+  createdAt?: string;
 }

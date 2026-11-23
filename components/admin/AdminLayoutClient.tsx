@@ -5,13 +5,17 @@ import useAdminAuth from "@/hooks/useAdminAuth";
 import {
   BookOpen,
   Brain,
+  Camera,
+  Clapperboard,
   FileText,
+  Heart,
   Folder,
   Home,
   LayoutDashboard,
   Loader2,
   LogOut,
-  Tags,
+  MessagesSquare,
+  Video,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -23,9 +27,13 @@ const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/posts", label: "Posts", icon: FileText },
   { href: "/admin/notes", label: "Notes", icon: BookOpen },
-  { href: "/admin/categories", label: "Categories", icon: Tags },
   { href: "/admin/projects", label: "Projects", icon: Folder },
   { href: "/admin/learning", label: "Learning", icon: Brain },
+  { href: "/admin/daily", label: "Daily", icon: Camera },
+  { href: "/admin/films", label: "Film Reviews", icon: Clapperboard },
+  { href: "/admin/board", label: "Message Board", icon: MessagesSquare },
+  { href: "/admin/ive", label: "IVE Archive", icon: Video },
+  { href: "/admin/interests", label: "Interests", icon: Heart },
 ];
 
 export function AdminLayoutClient({ children }: { children: React.ReactNode }) {

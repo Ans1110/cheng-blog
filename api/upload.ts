@@ -8,7 +8,7 @@ const upload = new Hono();
 // Auth middleware for all upload routes
 upload.use("*", authMiddleware);
 
-// POST /upload - upload image to Cloudinary
+// POST /upload - upload an image or PDF to Cloudinary
 upload.post("/", uploadRateLimiter, async (c) => {
   try {
     const formData = await c.req.formData();
@@ -18,19 +18,17 @@ upload.post("/", uploadRateLimiter, async (c) => {
     if (!file)
       return c.json({ success: false, message: "File is required" }, 400);
 
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "image/gif",
-      "image/gif",
-    ];
-    if (!allowedTypes.includes(file.type))
+    const imageTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    const isPdf = file.type === "application/pdf";
+    if (!isPdf && !imageTypes.includes(file.type))
       return c.json({ success: false, message: "Invalid file type" }, 400);
 
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = (isPdf ? 10 : 5) * 1024 * 1024;
     if (file.size > maxSize)
-      return c.json({ success: false, message: "File size exceeds 5MB" }, 400);
+      return c.json(
+        { success: false, message: `File size exceeds ${isPdf ? 10 : 5}MB` },
+        400
+      );
 
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -43,11 +41,13 @@ upload.post("/", uploadRateLimiter, async (c) => {
       ? `project_${projectId}_${timestamp}`
       : `temp_${timestamp}`;
 
-    // upload to Cloudinary
+    // PDFs go up as raw files: Cloudinary blocks PDF delivery from the image
+    // pipeline by default, and raw keeps the original bytes. Raw public IDs
+    // need the extension so the URL serves as a .pdf.
     const result = await cloudinary.uploader.upload(dataUri, {
       folder: process.env.CLOUDINARY_FOLDER,
-      public_id: publicId,
-      resource_type: "image",
+      public_id: isPdf ? `${publicId}.pdf` : publicId,
+      resource_type: isPdf ? "raw" : "image",
     });
 
     return c.json({
@@ -64,7 +64,7 @@ upload.post("/", uploadRateLimiter, async (c) => {
     return c.json(
       {
         success: false,
-        message: "Error uploading image",
+        message: "Error uploading file",
       },
       500
     );

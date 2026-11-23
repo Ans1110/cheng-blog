@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
+import { MotionConfig } from "framer-motion";
 import { toast, Toaster } from "sonner";
 import { ScrollToTop } from "./ScrollToTop";
 
@@ -32,9 +33,11 @@ const Providers = ({ children }: ProvidersProps) => {
         enableSystem
         disableTransitionOnChange
       >
-        <ScrollToTop />
-        <Toaster />
-        {children}
+        <MotionConfig reducedMotion="user">
+          <ScrollToTop />
+          <Toaster />
+          {children}
+        </MotionConfig>
       </ThemeProvider>
     </QueryClientProvider>
   );

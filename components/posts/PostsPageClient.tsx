@@ -1,32 +1,13 @@
 "use client";
 
 import { Post } from "@/types/post";
-import { Variants } from "framer-motion";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Input } from "../ui/input";
-import { Badge } from "../ui/badge";
-import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { format } from "date-fns";
+import { PageHeader, SearchField, TagChip } from "../dream/PageParts";
+import { PostCard } from "../ui/post-card";
 import { Pagination } from "../ui/pagination";
 
-const ITEMS_PER_PAGE = 9;
-
-const headerVariants: Variants = {
-  hidden: { opacity: 0, y: -20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
+const ITEMS_PER_PAGE = 10;
 
 interface PostsPageClientProps {
   posts: Post[];
@@ -37,22 +18,20 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  function handleTagSelect(tag: string | null) {
+  const handleTagSelect = (tag: string | null) => {
     setSelectedTag(tag);
     setCurrentPage(1);
-  }
+  };
 
-  function handleSearchChange(value: string) {
+  const handleSearchChange = (value: string) => {
     setSearchQuery(value);
     setCurrentPage(1);
-  }
+  };
 
   const allTags = useMemo(() => {
     if (!posts) return [];
     const tagSet = new Set<string>();
-    posts.forEach((post) => {
-      post.tags?.forEach((tag) => tagSet.add(tag));
-    });
+    posts.forEach((post) => post.tags?.forEach((t) => tagSet.add(t)));
     return Array.from(tagSet).sort();
   }, [posts]);
 
@@ -70,8 +49,8 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
 
   const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
   const paginatedPosts = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredPosts.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredPosts, currentPage]);
 
   const handlePageChange = (page: number) => {
@@ -80,141 +59,57 @@ export const PostsPageClient = ({ posts }: PostsPageClientProps) => {
   };
 
   return (
-    <div className="container py-12 space-y-10 min-h-screen">
-      {/* Header */}
-      <motion.div
-        className="space-y-3"
-        initial="hidden"
-        animate="visible"
-        variants={headerVariants}
-      >
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-          Posts
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Browse all posts and filter by tags
-        </p>
-      </motion.div>
+    <div className="container pb-16 min-h-screen">
+      <PageHeader title="Posts" meta={`${filteredPosts.length} ${filteredPosts.length === 1 ? "post" : "posts"}`} />
 
-      {/* Filters */}
       <motion.div
-        className="space-y-6"
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="max-w-3xl mx-auto space-y-5 mb-10"
       >
-        <div className="relative">
-          <Input
-            placeholder="Search posts by title or excerpt..."
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="max-w-md h-11 text-base"
-          />
-        </div>
-
+        <SearchField
+          id="post-search"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search posts…"
+        />
         {allTags.length > 0 && (
-          <motion.div
-            className="flex flex-wrap gap-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-          >
-            <Badge
-              variant={!selectedTag ? "default" : "outline"}
-              onClick={() => handleTagSelect(null)}
-              className="cursor-pointer transition-all hover:scale-105 px-4 py-1.5"
-            >
-              All
-            </Badge>
-            {allTags.map((tag, index) => (
-              <motion.div
+          <div className="flex flex-wrap justify-center gap-2">
+            <TagChip label="All" active={!selectedTag} onClick={() => handleTagSelect(null)} />
+            {allTags.map((tag) => (
+              <TagChip
                 key={tag}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.2 + index * 0.03 }}
-              >
-                <Badge
-                  variant={selectedTag === tag ? "default" : "outline"}
-                  onClick={() => handleTagSelect(tag)}
-                  className="cursor-pointer transition-all hover:scale-105 px-4 py-1.5"
-                >
-                  {tag}
-                </Badge>
-              </motion.div>
+                label={tag}
+                active={selectedTag === tag}
+                onClick={() => handleTagSelect(tag)}
+              />
             ))}
-          </motion.div>
+          </div>
         )}
       </motion.div>
 
-      {/* Posts Grid */}
-      {filteredPosts?.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="text-center py-16"
-        >
-          <p className="text-muted-foreground text-lg">No posts found.</p>
-        </motion.div>
+      {filteredPosts.length === 0 ? (
+        <p className="text-center text-muted-foreground py-20">Nothing matches that.</p>
       ) : (
         <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {paginatedPosts?.map((post, index) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.1,
-                  ease: "easeOut",
-                }}
-              >
-                <Link href={`/posts/${post.slug}`}>
-                  <Card className="h-full hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 border-border/50 group">
-                    <CardHeader className="space-y-3">
-                      <CardTitle className="line-clamp-2 text-xl group-hover:text-primary transition-colors">
-                        {post.title}
-                      </CardTitle>
-                      <CardDescription className="text-sm">
-                        {format(new Date(post.createdAt), "MMMM d, yyyy")}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {post.excerpt && (
-                        <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
-                          {post.excerpt}
-                        </p>
-                      )}
-                      {post.tags && post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 pt-2">
-                          {post.tags.slice(0, 3).map((tag) => (
-                            <Badge
-                              key={tag}
-                              variant="secondary"
-                              className="text-xs"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                          {post.tags.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{post.tags.length - 3}
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
+          <motion.div
+            key={`${selectedTag}-${searchQuery}-${currentPage}`}
+            initial="hidden"
+            animate="visible"
+            variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
+            className="grid gap-5 max-w-3xl mx-auto"
+          >
+            {paginatedPosts.map((post) => (
+              <PostCard key={post.id} post={post} />
             ))}
-          </div>
+          </motion.div>
+
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-            className="mt-8"
+            className="mt-12"
           />
         </>
       )}

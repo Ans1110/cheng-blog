@@ -18,12 +18,13 @@ import { ControlledTextarea } from "../ui/controlled-textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import MarkdownRenderer from "../markdown/MarkDownRenderer";
 import { Badge } from "../ui/badge";
+import { CreatedAtField, toLocalInput } from "./CreatedAtField";
 
 type PostFormData = z.input<typeof createPostSchema>;
 
 interface PostEditorProps {
   post?: Post;
-  onSave: (data: PostFormData) => Promise<void>;
+  onSave: (data: PostFormData & { createdAt?: string }) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -33,6 +34,8 @@ const PostEditor = ({ post, onSave, isLoading = false }: PostEditorProps) => {
   const [tags, setTags] = useState<string[]>(post?.tags || []);
   const [tagInput, setTagInput] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const initialCreatedAt = toLocalInput(post?.createdAt);
+  const [createdAt, setCreatedAt] = useState(initialCreatedAt);
 
   const form = useForm<PostFormData>({
     resolver: zodResolver(createPostSchema),
@@ -98,7 +101,14 @@ const PostEditor = ({ post, onSave, isLoading = false }: PostEditorProps) => {
   const onSubmit = async (data: PostFormData) => {
     setIsSaving(true);
     try {
-      await onSave({ ...data, tags });
+      await onSave({
+        ...data,
+        tags,
+        // Only send a time the admin actually changed (inputs drop the seconds).
+        ...(createdAt && createdAt !== initialCreatedAt && {
+          createdAt: new Date(createdAt).toISOString(),
+        }),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -221,6 +231,8 @@ const PostEditor = ({ post, onSave, isLoading = false }: PostEditorProps) => {
                     Generate
                   </Button>
                 </div>
+
+                <CreatedAtField value={createdAt} onChange={setCreatedAt} isNew={!post} />
 
                 {/* Excerpt */}
                 <div className="space-y-2">

@@ -9,23 +9,15 @@ export const ProjectSection = () => {
   const { data: projects, isLoading, error } = useProjects();
 
   return (
-    <section className="py-40 bg-background">
-      <div className="container px-4">
-        <SectionHeader
-          title="Projects"
-          description="Side projects I've worked on"
-        />
-        {isLoading ? (
-          <ProjectListSkeleton count={6} />
-        ) : error ? (
-          <div className="text-center py-10">
-            <p className="text-lg text-destructive">Error loading projects</p>
-            <p className="text-sm text-muted-foreground">{error.message}</p>
-          </div>
-        ) : (
-          <ProjectList projects={projects || []} />
-        )}
-      </div>
+    <section className="container py-20 md:py-28">
+      <SectionHeader title="Projects" />
+      {isLoading ? (
+        <ProjectListSkeleton count={4} />
+      ) : error ? (
+        <p className="text-center py-10 text-destructive">Couldn&rsquo;t load projects: {error.message}</p>
+      ) : (
+        <ProjectList projects={projects || []} />
+      )}
     </section>
   );
 };
