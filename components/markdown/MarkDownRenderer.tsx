@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import Image from "next/image";
+import { normalizeMarkdown } from "@/utils/markdown";
 
 interface MarkdownRendererProps {
   content: string;
@@ -112,7 +113,7 @@ export const MarkdownRenderer = ({
           hr: () => <hr className="my-8 border-border" />,
         }}
       >
-        {content}
+        {normalizeMarkdown(content)}
       </ReactMarkdown>
     </div>
   );
