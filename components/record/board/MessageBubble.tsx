@@ -54,7 +54,7 @@ export function MessageBubble({
       >
         <SoapBubble seed={message.id} />
         {message.content ? (
-          <span className="sb-text relative line-clamp-5 break-words text-sm leading-snug transition-opacity duration-300 opacity-90 group-hover:opacity-100">
+          <span className="sb-text relative line-clamp-5 wrap-anywhere text-sm leading-snug transition-opacity duration-300 opacity-90 group-hover:opacity-100">
             {message.content}
           </span>
         ) : (

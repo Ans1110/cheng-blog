@@ -144,7 +144,7 @@ export default function MessageBoardPage() {
                 </div>
               )}
               <DialogDescription asChild>
-                <p className="relative whitespace-pre-wrap break-words text-base leading-relaxed text-foreground">
+                <p className="relative min-w-0 whitespace-pre-wrap wrap-anywhere text-base leading-relaxed text-foreground">
                   {open.content || (open.imageUrl ? "" : "\u00a0")}
                 </p>
               </DialogDescription>

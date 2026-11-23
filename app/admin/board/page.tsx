@@ -63,7 +63,7 @@ export default function AdminBoardPage() {
               <TableBody>
                 {messages.map((m) => (
                   <TableRow key={m.id}>
-                    <TableCell className="max-w-xl whitespace-pre-wrap break-words">
+                    <TableCell className="max-w-xl whitespace-pre-wrap wrap-anywhere">
                       {m.content}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
