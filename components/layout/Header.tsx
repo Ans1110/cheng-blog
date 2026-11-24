@@ -49,16 +49,6 @@ export const Header = () => {
   }, []);
 
   useEffect(() => {
-    if (mobileMenuOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-  }, [mobileMenuOpen]);
-
-  useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
     setOpenSubmenu(null);
@@ -71,6 +61,8 @@ export const Header = () => {
     }
   };
 
+  // touch-none on the overlay keeps a swipe from scrolling the page behind it.
+  // (Locking body overflow instead made phones relayout the page on every close.)
   // Always mounted and driven by CSS transitions rather than an exit animation:
   // the open state flips instantly, so a closing menu can never trap taps or
   // stall on a slow phone.
@@ -82,7 +74,7 @@ export const Header = () => {
       aria-hidden={!mobileMenuOpen}
       inert={!mobileMenuOpen}
       className={cn(
-        "fixed inset-0 z-[60] md:hidden bg-background/85 backdrop-blur-xl flex flex-col items-center justify-center transition-[opacity,visibility] duration-300",
+        "fixed inset-0 z-[60] md:hidden touch-none overscroll-none bg-background/85 backdrop-blur-xl flex flex-col items-center justify-center transition-[opacity,visibility] duration-300",
         mobileMenuOpen ? "visible opacity-100" : "invisible opacity-0 pointer-events-none",
       )}
       onClick={() => setMobileMenuOpen(false)}
