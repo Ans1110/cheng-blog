@@ -471,6 +471,17 @@
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-14px) rotate(1.5deg); }
 }
+/* K-pop star rings: a GPU-only spin from a per-ring start angle (--from) and
+   direction (--dir). The base transform keeps the angle when motion is reduced. */
+.star-ring {
+  transform: rotate(var(--from));
+  will-change: transform;
+  animation: star-ring-spin var(--spin) linear infinite;
+}
+@keyframes star-ring-spin {
+  from { transform: rotate(var(--from)); }
+  to { transform: rotate(calc(var(--from) + 360deg * var(--dir))); }
+}
 @keyframes twinkle {
   0%, 100% { opacity: 0.15; transform: scale(0.6); }
   50% { opacity: 1; transform: scale(1); }

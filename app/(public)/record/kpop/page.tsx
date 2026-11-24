@@ -1,7 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/dream/PageParts";
-import { motion, useReducedMotion, type MotionStyle } from "framer-motion";
+import { motion } from "framer-motion";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 
 type Block = {
@@ -24,7 +25,7 @@ const blocks: Block[] = [
   {
     href: "/record/kpop/archive",
     title: "IVE Archive",
-    blurb: "Practice with Stage & MVs",
+    blurb: "Time Spent with IVE",
     at: { left: "73%", top: "70%" },
     // Light blue — the theme blue is too dark against the night background.
     color: "#91caff",
@@ -81,26 +82,21 @@ export default function KpopPage() {
 }
 
 function StarBadge({ block, index }: { block: Block; index: number }) {
-  const reduceMotion = useReducedMotion();
-  const spin = (from: number, dir: 1 | -1, duration: number) =>
-    reduceMotion
-      ? { initial: { rotate: from }, animate: { rotate: from } }
-      : {
-          initial: { rotate: from },
-          animate: { rotate: from + 360 * dir },
-          transition: { duration, repeat: Infinity, ease: "linear" as const },
-        };
+  // CSS custom properties driving the .star-ring spin (see globals.css).
+  const spin = (from: number, dir: 1 | -1, seconds: number) =>
+    ({ "--from": `${from}deg`, "--dir": dir, "--spin": `${seconds}s` }) as CSSProperties;
 
   // Two rounded squares, 45° apart, form the 8-point star from the sketch.
-  const ringStyle: MotionStyle = {
+  const ringStyle: CSSProperties = {
     borderColor: `color-mix(in oklch, ${block.color} 75%, transparent)`,
     boxShadow: `0 0 30px -8px ${block.color}, inset 0 0 24px -12px ${block.color}`,
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.6, filter: "blur(10px)" }}
-      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+      // Opacity and scale only: a blur filter on a badge this large stutters on phones.
+      initial={{ opacity: 0, scale: 0.6 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{
         delay: 0.5 + index * 0.2,
         duration: 0.8,
@@ -113,17 +109,16 @@ function StarBadge({ block, index }: { block: Block; index: number }) {
         href={block.href}
         className="group relative flex size-44 items-center justify-center rounded-full outline-none sm:size-60 md:size-80 lg:size-96 focus-visible:ring-2 focus-visible:ring-[var(--dream-lilac)]"
       >
-        <motion.span
+        {/* No backdrop blur here: re-blurring behind a spinning ring every frame is what froze phones. */}
+        <span
           aria-hidden
-          className="absolute inset-[12%] rounded-[22%] border-2 md:border-[3px] backdrop-blur-[2px] transition-[inset] duration-500 group-hover:inset-[8%]"
-          style={ringStyle}
-          {...spin(12, 1, 36)}
+          className="star-ring absolute inset-[12%] rounded-[22%] border-2 md:border-[3px] transition-[inset] duration-500 group-hover:inset-[8%]"
+          style={{ ...ringStyle, ...spin(12, 1, 36) }}
         />
-        <motion.span
+        <span
           aria-hidden
-          className="absolute inset-[12%] rounded-[22%] border-2 md:border-[3px] transition-[inset] duration-500 group-hover:inset-[8%]"
-          style={ringStyle}
-          {...spin(57, -1, 48)}
+          className="star-ring absolute inset-[12%] rounded-[22%] border-2 md:border-[3px] transition-[inset] duration-500 group-hover:inset-[8%]"
+          style={{ ...ringStyle, ...spin(57, -1, 48) }}
         />
         {/* Soft fill so the label reads over the background */}
         <span
