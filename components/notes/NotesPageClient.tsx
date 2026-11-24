@@ -42,6 +42,7 @@ export const NotesPageClient = ({
 
   const handleCategorySelect = (categoryId: string | null) => {
     setSelectedCategory(categoryId);
+    setSelectedTag(null);
     setCurrentPage(1);
   };
 
@@ -62,12 +63,14 @@ export const NotesPageClient = ({
     setCurrentPage(1);
   };
 
-  const allTags = useMemo(() => {
-    if (!notes) return [];
+  // Tags used inside the open category; they filter that category's notes.
+  const categoryTags = useMemo(() => {
     const tagSet = new Set<string>();
-    notes.forEach((note) => note.tags?.forEach((t) => tagSet.add(t)));
+    notes
+      .filter((note) => note.category === selectedCategory)
+      .forEach((note) => note.tags?.forEach((t) => tagSet.add(t)));
     return Array.from(tagSet).sort();
-  }, [notes]);
+  }, [notes, selectedCategory]);
 
   const filteredNotes = useMemo(() => {
     if (!notes) return [];
@@ -137,13 +140,6 @@ export const NotesPageClient = ({
             onChange={handleSearchChange}
             placeholder="Search notes…"
           />
-          {allTags.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2">
-              {allTags.map((tag) => (
-                <TagChip key={tag} label={tag} onClick={() => handleTagSelect(tag)} />
-              ))}
-            </div>
-          )}
         </motion.div>
 
         {searchQuery ? (
@@ -222,12 +218,30 @@ export const NotesPageClient = ({
           onChange={handleSearchChange}
           placeholder="Search here…"
         />
-        {selectedTag && (
-          <div className="flex justify-center">
-            <TagChip label={selectedTag} active onClick={() => handleTagSelect(null)}>
-              <X className="size-3.5" />
-            </TagChip>
+        {selectedCategory && categoryTags.length > 0 ? (
+          <div className="flex flex-wrap justify-center gap-2">
+            {categoryTags.map((tag) => {
+              const active = selectedTag === tag;
+              return (
+                <TagChip
+                  key={tag}
+                  label={tag}
+                  active={active}
+                  onClick={() => handleTagSelect(active ? null : tag)}
+                >
+                  {active && <X className="size-3.5" />}
+                </TagChip>
+              );
+            })}
           </div>
+        ) : (
+          selectedTag && (
+            <div className="flex justify-center">
+              <TagChip label={selectedTag} active onClick={() => handleTagSelect(null)}>
+                <X className="size-3.5" />
+              </TagChip>
+            </div>
+          )
         )}
       </motion.div>
 
