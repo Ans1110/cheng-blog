@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -71,67 +71,68 @@ export const Header = () => {
     }
   };
 
+  // Always mounted and driven by CSS transitions rather than an exit animation:
+  // the open state flips instantly, so a closing menu can never trap taps or
+  // stall on a slow phone.
   const mobileMenu = (
-    <AnimatePresence>
-      {mobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          // Stop catching taps the moment it starts closing, so the menu can reopen at once.
-          exit={{ opacity: 0, pointerEvents: "none" }}
-          transition={{ duration: 0.25 }}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Site navigation"
-          className="fixed inset-0 z-[60] md:hidden bg-background/80 backdrop-blur-xl flex flex-col items-center justify-center"
-          onClick={() => setMobileMenuOpen(false)}
-        >
-          <nav className="flex flex-col items-center gap-3">
-            {navItems.map((item, i) => {
-              const active = isActive(pathname, item.href);
-              return (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0, transition: { delay: 0.05 * i + 0.05, duration: 0.35 } }}
-                  exit={{ opacity: 0, y: 12, transition: { duration: 0.15 } }}
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      "font-display text-5xl italic px-4 py-1 block",
-                      active ? "text-dream" : "text-foreground/60",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                  {item.children && (
-                    <div className="flex justify-center gap-4 mt-1">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className={cn(
-                            "text-sm font-semibold transition-colors",
-                            pathname.startsWith(child.href)
-                              ? "text-dream"
-                              : "text-muted-foreground hover:text-foreground",
-                          )}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </nav>
-        </motion.div>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Site navigation"
+      aria-hidden={!mobileMenuOpen}
+      inert={!mobileMenuOpen}
+      className={cn(
+        "fixed inset-0 z-[60] md:hidden bg-background/85 backdrop-blur-xl flex flex-col items-center justify-center transition-[opacity,visibility] duration-300",
+        mobileMenuOpen ? "visible opacity-100" : "invisible opacity-0 pointer-events-none",
       )}
-    </AnimatePresence>
+      onClick={() => setMobileMenuOpen(false)}
+    >
+      <nav className="flex flex-col items-center gap-3">
+        {navItems.map((item, i) => {
+          const active = isActive(pathname, item.href);
+          return (
+            <div
+              key={item.href}
+              className={cn(
+                "transition-[opacity,transform] duration-300 ease-out",
+                mobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
+              )}
+              style={{ transitionDelay: mobileMenuOpen ? `${50 * i + 50}ms` : "0ms" }}
+            >
+              <Link
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={cn(
+                  "font-display text-5xl italic px-4 py-1 block",
+                  active ? "text-dream" : "text-foreground/60",
+                )}
+              >
+                {item.label}
+              </Link>
+              {item.children && (
+                <div className="flex justify-center gap-4 mt-1">
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={cn(
+                        "text-sm font-semibold transition-colors",
+                        pathname.startsWith(child.href)
+                          ? "text-dream"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </nav>
+    </div>
   );
 
   return (
@@ -240,7 +241,7 @@ export const Header = () => {
             <ThemeToggle />
             <button
               className="md:hidden relative z-[80] size-10 flex items-center justify-center rounded-full hover:bg-accent transition-colors"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() => setMobileMenuOpen((open) => !open)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
             >
