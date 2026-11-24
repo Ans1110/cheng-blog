@@ -75,14 +75,15 @@ export const Header = () => {
     <AnimatePresence>
       {mobileMenuOpen && (
         <motion.div
-          initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-          animate={{ opacity: 1, backdropFilter: "blur(24px)" }}
-          exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-          transition={{ duration: 0.35 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          // Stop catching taps the moment it starts closing, so the menu can reopen at once.
+          exit={{ opacity: 0, pointerEvents: "none" }}
+          transition={{ duration: 0.25 }}
           role="dialog"
           aria-modal="true"
           aria-label="Site navigation"
-          className="fixed inset-0 z-[60] md:hidden bg-background/70 flex flex-col items-center justify-center"
+          className="fixed inset-0 z-[60] md:hidden bg-background/80 backdrop-blur-xl flex flex-col items-center justify-center"
           onClick={() => setMobileMenuOpen(false)}
         >
           <nav className="flex flex-col items-center gap-3">
@@ -91,10 +92,9 @@ export const Header = () => {
               return (
                 <motion.div
                   key={item.href}
-                  initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: 12, filter: "blur(8px)" }}
-                  transition={{ delay: 0.06 * i + 0.1, duration: 0.45 }}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0, transition: { delay: 0.05 * i + 0.05, duration: 0.35 } }}
+                  exit={{ opacity: 0, y: 12, transition: { duration: 0.15 } }}
                 >
                   <Link
                     href={item.href}
@@ -143,7 +143,8 @@ export const Header = () => {
         style={{ scaleX: progress }}
       />
 
-      <header className="sticky top-0 z-50 w-full pt-3 md:pt-4 px-3">
+      {/* Above the menu overlay while it is open, so the toggle button stays tappable */}
+      <header className={cn("sticky top-0 w-full pt-3 md:pt-4 px-3", mobileMenuOpen ? "z-[65]" : "z-50")}>
         <div className="glass mx-auto max-w-5xl rounded-full flex h-14 items-center justify-between pl-5 pr-2">
           <Link
             href="/"

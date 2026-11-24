@@ -1,11 +1,14 @@
 "use client";
 
 import { AboutPageClient } from "@/components/about";
+import { useInterests } from "@/hooks/useInterests";
 import { useLearning } from "@/hooks/useLearning";
 import { Loader2 } from "lucide-react";
 
 export default function AboutPage() {
   const { data: learning, isLoading: isLearningLoading, error } = useLearning();
+  // Start the interests request now, alongside learning, instead of after it.
+  useInterests();
 
   if (isLearningLoading) {
     return (

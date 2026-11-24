@@ -17,18 +17,17 @@ const bubbleColors = [
 ];
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 const stagger: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.05 } },
 };
 
 const links = [
@@ -128,24 +127,19 @@ export const AboutPageClient = ({ data }: AboutPageClientProps) => {
               const color = bubbleColors[i % bubbleColors.length];
               return (
                 <motion.li key={id} variants={fadeUp}>
-                  <motion.span
-                    animate={{ y: [0, -8, 0] }}
-                    transition={{
-                      duration: 3 + (i % 4) * 0.7,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: i * 0.25,
-                    }}
-                    whileHover={{ scale: 1.15 }}
-                    className="inline-block rounded-full px-5 py-2 font-semibold cursor-default select-none backdrop-blur-md"
+                  {/* CSS float (compositor-only) and no per-bubble backdrop blur: both were heavy on phones */}
+                  <span
+                    className="animate-float inline-block rounded-full px-5 py-2 font-semibold cursor-default select-none transition-transform duration-300 hover:scale-110"
                     style={{
+                      animationDuration: `${3 + (i % 4) * 0.7}s`,
+                      animationDelay: `${-(i * 0.25)}s`,
                       background: `color-mix(in oklch, ${color} 28%, transparent)`,
                       border: `1px solid color-mix(in oklch, ${color} 60%, transparent)`,
                       boxShadow: `0 8px 24px -10px ${color}, inset 0 1px 0 oklch(1 0 0 / 0.4)`,
                     }}
                   >
                     {tag}
-                  </motion.span>
+                  </span>
                 </motion.li>
               );
             })}
