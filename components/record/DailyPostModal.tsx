@@ -36,18 +36,21 @@ export function DailyPostModal({ post, initialIndex, onClose }: DailyPostModalPr
 
   return (
     <Dialog open={!!post} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="glass gap-0 p-0 overflow-hidden rounded-3xl sm:max-w-5xl max-h-[90vh] grid-cols-1 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      {/* Phones: a column sized to the visible screen (dvh excludes the address bar), photo on
+          top with a capped height and the story filling the rest with its own scroll. Before,
+          photo + a 50vh text box overflowed the dialog and the story's end was cut off. */}
+      <DialogContent className="glass gap-0 p-0 overflow-hidden rounded-3xl sm:max-w-5xl max-h-[90dvh] flex flex-col md:grid md:max-h-[90vh] md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         {post && (
           <>
             {/* Left: photo collection */}
-            <div className="relative bg-black/90 flex flex-col">
+            <div className="relative shrink-0 bg-black/90 flex flex-col">
               <PhotoCarousel
                 images={post.images}
                 index={index}
                 onIndexChange={setIndex}
                 fit="contain"
                 sizes="(min-width: 768px) 60vw, 100vw"
-                className="aspect-[4/5] md:aspect-auto md:h-[80vh] w-full"
+                className="aspect-[4/5] max-h-[45dvh] md:max-h-none md:aspect-auto md:h-[80vh] w-full"
               />
               {caption && (
                 <AnimatePresence mode="wait" initial={false}>
@@ -66,7 +69,7 @@ export function DailyPostModal({ post, initialIndex, onClose }: DailyPostModalPr
             </div>
 
             {/* Right: long text */}
-            <div className="flex flex-col min-h-0 max-h-[50vh] md:max-h-[80vh] overflow-y-auto p-6 md:p-8">
+            <div className="flex flex-col flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 md:p-8 md:max-h-[80vh]">
               <time className="eyebrow text-xs" dateTime={post.createdAt}>
                 {format(new Date(post.createdAt), "MMMM d, yyyy")}
               </time>
