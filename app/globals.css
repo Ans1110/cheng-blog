@@ -282,7 +282,6 @@
     mask-composite: exclude;
     opacity: 0;
     transition: opacity 0.5s ease;
-    animation: holo-spin 6s linear infinite;
     pointer-events: none;
     z-index: 1;
   }
@@ -306,6 +305,12 @@
   .group:hover .holo::after,
   .holo:hover::after {
     opacity: 1;
+  }
+  /* Spin the border only while it shows: animating --holo-angle repaints the
+     gradient every frame, which every card was doing invisibly. */
+  .group:hover .holo::before,
+  .holo:hover::before {
+    animation: holo-spin 6s linear infinite;
   }
 
   /* Pixel-art logo / wings painted with a shifting pastel gradient */
@@ -795,4 +800,47 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Message board: bubbles bob on `translate` (compositor-only, leaves `transform`
+   to framer's hover scale) and the rim film turns slowly from a per-bubble angle. */
+.bubble-bob {
+  animation: bubble-bob 5s ease-in-out infinite;
+}
+@keyframes bubble-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 calc(var(--bob) * -1); }
+}
+.sb-film-spin {
+  rotate: var(--film-from);
+  animation: sb-film-spin 30s linear infinite;
+}
+@keyframes sb-film-spin {
+  to { rotate: calc(var(--film-from) + 360deg); }
+}
+
+/* ── Phones: keep the look, drop the per-frame GPU work ──────────────────────
+   Backdrop blurs, blur filters, blend modes and painted animations all redraw
+   large areas every frame; mid-range phones stutter on them. */
+@media (max-width: 767px) {
+  /* Frosted glass without the live blur: a denser fill reads the same. */
+  :root { --glass-bg: oklch(1 0 0 / 0.82); }
+  .dark { --glass-bg: oklch(0.2 0.045 262 / 0.86); }
+  .glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* Static title glow instead of a breathing text-shadow. */
+  .text-dream { animation: none; }
+
+  /* Entrance animations animate filter: blur() inline; skip the blur part.
+     (Opacity and movement still play.) */
+  [style*="filter: blur("]:not([style*="backdrop-filter"]) { filter: none !important; }
+
+  /* Hero orbit: drop the blurred glow copy of the comet tail (redrawn every frame). */
+  .trail-tail-glow { display: none; }
+
+  /* Board: a masked, blended film turning on every bubble is too much; hold it still. */
+  .sb-film-spin { animation: none; }
 }

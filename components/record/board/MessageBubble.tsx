@@ -1,7 +1,8 @@
 "use client";
 
 import type { BoardMessage } from "@/types/board";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import type { CSSProperties } from "react";
 import { ImageIcon } from "lucide-react";
 import { rand, SoapBubble } from "./SoapBubble";
 
@@ -29,7 +30,6 @@ export function MessageBubble({
   index: number;
   onOpen: (message: BoardMessage) => void;
 }) {
-  const reduceMotion = useReducedMotion();
   const l = bubbleLayout(message.id, message.content.length);
 
   return (
@@ -45,12 +45,20 @@ export function MessageBubble({
         type="button"
         onClick={() => onOpen(message)}
         aria-label="Open message"
-        animate={reduceMotion ? undefined : { y: [0, -l.bob, 0] }}
-        transition={{ duration: l.duration, repeat: Infinity, ease: "easeInOut", delay: rand(message.id) * 2 }}
         whileHover={{ scale: 1.07 }}
         whileTap={{ scale: 0.96 }}
-        className="group relative flex items-center justify-center rounded-full p-7 text-center outline-none focus-visible:ring-2 focus-visible:ring-[var(--dream-lilac)]"
-        style={{ width: `${l.size}rem`, height: `${l.size}rem` }}
+        // The bob is a CSS animation on `translate` (see .bubble-bob): it runs on the
+        // compositor and leaves `transform` free for the hover/tap scale above.
+        className="bubble-bob group relative flex items-center justify-center rounded-full p-7 text-center outline-none focus-visible:ring-2 focus-visible:ring-[var(--dream-lilac)]"
+        style={
+          {
+            width: `${l.size}rem`,
+            height: `${l.size}rem`,
+            "--bob": `${l.bob}px`,
+            animationDuration: `${l.duration}s`,
+            animationDelay: `${-rand(message.id) * 2}s`,
+          } as CSSProperties
+        }
       >
         <SoapBubble seed={message.id} />
         {message.content ? (

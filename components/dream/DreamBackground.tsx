@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -42,11 +43,11 @@ export function DreamBackground() {
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      {/* Drifting pastel orbs */}
+      {/* Drifting pastel orbs (blurred on desktop only; the gradient is soft enough on phones) */}
       {ORBS.map((o, i) => (
         <div
           key={i}
-          className="absolute rounded-full animate-drift opacity-50 dark:opacity-30 blur-[90px]"
+          className="absolute rounded-full animate-drift opacity-50 dark:opacity-30 md:blur-[90px]"
           style={
             {
               width: o.size,
@@ -66,7 +67,7 @@ export function DreamBackground() {
         s.glyph ? (
           <span
             key={s.id}
-            className="absolute animate-twinkle text-[var(--glow)] select-none"
+            className={cn("absolute animate-twinkle text-[var(--glow)] select-none", s.id % 2 && "hidden md:block")}
             style={
               {
                 top: `${s.top}%`,
@@ -82,7 +83,7 @@ export function DreamBackground() {
         ) : (
           <span
             key={s.id}
-            className="absolute rounded-full animate-twinkle bg-[var(--dream-lilac)] dark:bg-white"
+            className={cn("absolute rounded-full animate-twinkle bg-[var(--dream-lilac)] dark:bg-white", s.id % 2 && "hidden md:block")}
             style={
               {
                 top: `${s.top}%`,
@@ -99,8 +100,9 @@ export function DreamBackground() {
       )}
 
       {/* Film grain */}
+      {/* Desktop only: a full-screen blend layer makes phones recomposite everything under it */}
       <div
-        className="absolute inset-0 opacity-[0.07] dark:opacity-[0.09] mix-blend-overlay"
+        className="absolute inset-0 hidden md:block opacity-[0.07] dark:opacity-[0.09] mix-blend-overlay"
         style={{ backgroundImage: GRAIN, backgroundSize: "160px 160px" }}
       />
 

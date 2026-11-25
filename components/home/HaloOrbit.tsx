@@ -1,7 +1,7 @@
 "use client";
 
 import { useAnimationFrame, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 /** Seconds for one full lap around the halo. */
 const LAP = 16;
@@ -149,9 +149,30 @@ export function HaloOrbit() {
   const trailStarRefs = useRef<(SVGGElement | null)[]>([]);
   const heading = useRef<number | null>(null);
   const angle = useRef(START_ANGLE);
+  const rootRef = useRef<HTMLDivElement>(null);
+  // Only animate while the hero is on screen and the tab is visible.
+  const onScreen = useRef(true);
+  // Phones run the loop at ~30fps: half the DOM/SVG writes, still smooth at this speed.
+  const frameBudget = useRef(0);
+  const pending = useRef(0);
 
-  useAnimationFrame((_, delta) => {
-    if (reduceMotion) return;
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 767px), (pointer: coarse)").matches) frameBudget.current = 1000 / 30;
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => {
+      onScreen.current = entry.isIntersecting;
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useAnimationFrame((_, frameDelta) => {
+    if (reduceMotion || !onScreen.current || document.hidden) return;
+    pending.current += frameDelta;
+    if (pending.current < frameBudget.current) return;
+    const delta = pending.current;
+    pending.current = 0;
     angle.current = (angle.current + (360 / LAP) * (Math.min(delta, 50) / 1000)) % 360;
     const deg = angle.current;
     const rad = (deg * Math.PI) / 180;
@@ -305,7 +326,7 @@ export function HaloOrbit() {
   }
 
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0">
+    <div ref={rootRef} aria-hidden className="pointer-events-none absolute inset-0">
       {trail}
       <div ref={riderRef} className="absolute" style={{ left: START_POS.left, top: START_POS.top }}>
         {/* Crystal butterfly: faces "right" at rotate(0), i.e. along the top of a clockwise orbit */}

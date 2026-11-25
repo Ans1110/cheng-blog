@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import type { CSSProperties } from "react";
 
 /** Cheap deterministic pseudo-random so a bubble keeps the same look between renders. */
 export const rand = (seed: number) => {
@@ -19,7 +19,6 @@ const RIM_MASK = "radial-gradient(circle closest-side, transparent 70%, black 92
  * a faint iridescent film at the rim, a soft top-left highlight and a few trapped specks.
  */
 export function SoapBubble({ seed }: { seed: number }) {
-  const reduceMotion = useReducedMotion();
   const sparkles = Array.from({ length: 6 }, (_, i) => {
     const a = rand(seed + i) * Math.PI * 2;
     const r = 18 + Math.sqrt(rand(seed + i + 50)) * 22; // keep away from the text in the middle
@@ -44,12 +43,16 @@ export function SoapBubble({ seed }: { seed: number }) {
       />
 
       {/* Iridescent film at the rim, slowly drifting */}
-      <motion.span
-        className="sb-film absolute inset-0 rounded-full"
-        style={{ background: FILM, WebkitMask: RIM_MASK, mask: RIM_MASK }}
-        initial={{ rotate: rand(seed) * 360 }}
-        animate={reduceMotion ? undefined : { rotate: rand(seed) * 360 + 360 }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+      <span
+        className="sb-film sb-film-spin absolute inset-0 rounded-full"
+        style={
+          {
+            background: FILM,
+            WebkitMask: RIM_MASK,
+            mask: RIM_MASK,
+            "--film-from": `${rand(seed) * 360}deg`,
+          } as CSSProperties
+        }
       />
 
       {/* Faint sky reflection low in the bubble */}
